@@ -816,37 +816,104 @@ async function loadICS() {
   const url = document.getElementById('ics-url').value.trim();
   const status = document.getElementById('ics-status');
   const cl = document.getElementById('cours-import-list');
-  if (!url) { status.className='ics-status err'; status.textContent='Colle une URL ICS d\'abord.'; return; }
+  if (!url) { status.className='ics-status err'; status.textContent='Colle une URL ICS d\'abord.'; status.style.display='block'; return; }
 
-  status.className='ics-status'; status.textContent='Chargement…'; status.style.display='block';
+  status.className='ics-status'; status.textContent='⏳ Connexion au serveur de Nantes Université…'; status.style.display='block';
+  cl.innerHTML = '';
 
-  // On passe par un proxy CORS public pour récupérer le .ics
-  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
-  try {
-    const res = await fetch(proxyUrl);
-    const data = await res.json();
-    if (!data.contents) throw new Error('Réponse vide');
-    const events = parseICS(data.contents);
-    localStorage.setItem('ics-url', url);
-    localStorage.setItem('ics-events', JSON.stringify(events));
-    status.className='ics-status ok';
-    status.textContent = `✅ ${events.length} cours importés !`;
-    cl.innerHTML = '';
-    events.slice(0, 8).forEach(ev => {
-      const d = document.createElement('div');
-      d.className = 'cours-import-item';
-      d.innerHTML = `<span>${ev.summary}</span><span>${ev.date}</span>`;
-      cl.appendChild(d);
-    });
-    if (events.length > 8) {
-      const more = document.createElement('div');
-      more.style = 'font-size:12px;color:var(--text-soft);padding:4px 0;';
-      more.textContent = `+ ${events.length - 8} autres cours`;
-      cl.appendChild(more);
+  // Liste de proxies CORS à essayer dans l'ordre
+  const proxies = [
+    async (u) => {
+      const r = await fetch('https://corsproxy.io/?' + encodeURIComponent(u));
+      if (!r.ok) throw new Error('corsproxy.io failed');
+      return await r.text();
+    },
+    async (u) => {
+      const r = await fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u));
+      if (!r.ok) throw new Error('codetabs failed');
+      return await r.text();
+    },
+    async (u) => {
+      const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(u));
+      if (!r.ok) throw new Error('allorigins failed');
+      const d = await r.json();
+      if (!d.contents) throw new Error('empty');
+      return d.contents;
+    },
+    async (u) => {
+      const r = await fetch('https://thingproxy.freeboard.io/fetch/' + u);
+      if (!r.ok) throw new Error('thingproxy failed');
+      return await r.text();
     }
-  } catch(e) {
+  ];
+
+  let icsText = null;
+  let lastErr = '';
+  for (let i = 0; i < proxies.length; i++) {
+    try {
+      status.textContent = `⏳ Tentative ${i+1}/${proxies.length}…`;
+      icsText = await proxies[i](url);
+      if (icsText && icsText.includes('BEGIN:VCALENDAR')) break;
+      icsText = null;
+    } catch(e) { lastErr = e.message; }
+  }
+
+  if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) {
     status.className='ics-status err';
-    status.textContent = '❌ Impossible de charger. Vérifie l\'URL ou si le serveur autorise l\'accès externe.';
+    status.innerHTML = `❌ <strong>Le serveur de Nantes Université bloque l'accès depuis une application web.</strong><br><br>
+      <strong>Solution :</strong> télécharge ton fichier .ics depuis <a href="https://edt.univ-nantes.fr" target="_blank" style="color:var(--red)">edt.univ-nantes.fr</a>, 
+      puis clique sur "Importer un fichier .ics" ci-dessous.`;
+    // Afficher bouton import fichier local
+    const btn = document.createElement('label');
+    btn.className = 'ics-btn';
+    btn.style = 'display:inline-block;margin-top:10px;cursor:pointer;';
+    btn.innerHTML = '📁 Importer un fichier .ics';
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.ics';
+    inp.style = 'display:none';
+    inp.onchange = (e) => loadICSFile(e.target.files[0]);
+    btn.appendChild(inp);
+    cl.appendChild(btn);
+    return;
+  }
+
+  afficherResultatICS(icsText, url, status, cl);
+}
+
+function loadICSFile(file) {
+  const status = document.getElementById('ics-status');
+  const cl = document.getElementById('cours-import-list');
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result;
+    if (!text.includes('BEGIN:VCALENDAR')) {
+      status.className='ics-status err'; status.textContent='❌ Ce fichier ne semble pas être un fichier ICS valide.'; return;
+    }
+    afficherResultatICS(text, file.name, status, cl);
+  };
+  reader.readAsText(file);
+}
+
+function afficherResultatICS(icsText, source, status, cl) {
+  const events = parseICS(icsText);
+  localStorage.setItem('ics-url', source);
+  localStorage.setItem('ics-events', JSON.stringify(events));
+  status.className='ics-status ok';
+  status.textContent = `✅ ${events.length} cours importés avec succès !`;
+  cl.innerHTML = '';
+  events.slice(0, 8).forEach(ev => {
+    const d = document.createElement('div');
+    d.className = 'cours-import-item';
+    d.innerHTML = `<span>${ev.summary}</span><span>${ev.date}</span>`;
+    cl.appendChild(d);
+  });
+  if (events.length > 8) {
+    const more = document.createElement('div');
+    more.style = 'font-size:12px;color:var(--text-soft);padding:4px 0;';
+    more.textContent = `+ ${events.length - 8} autres cours`;
+    cl.appendChild(more);
   }
 }
 
