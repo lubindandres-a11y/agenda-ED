@@ -371,6 +371,114 @@
   .matiere-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .matiere-name { font-size: 14px; font-weight: 500; flex: 1; }
   .matiere-count { font-size: 13px; color: var(--text-soft); }
+  .matiere-row { cursor: pointer; transition: transform 0.12s, border-color 0.12s; }
+  .matiere-row:active { transform: scale(0.99); }
+  .matiere-row:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .matiere-chevron { font-size: 22px; color: var(--text-xsoft); line-height: 1; }
+
+  /* MODALE MATIÈRE */
+  .matiere-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 210;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .matiere-modal-overlay.open { opacity: 1; pointer-events: all; }
+  .matiere-modal {
+    background: var(--card);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+  }
+  .matiere-modal-overlay.open .matiere-modal { transform: translateY(0); }
+  .matiere-modal-head {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .matiere-modal-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 14px;
+  }
+  .matiere-modal-title { font-size: 17px; font-weight: 700; }
+  .matiere-modal-sub { font-size: 13px; color: var(--text-soft); margin-top: 3px; }
+  .matiere-modal-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  .matiere-task {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .matiere-task:last-child { border-bottom: none; }
+  .matiere-task-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .matiere-task-check.checked {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .matiere-task-check.checked::after {
+    content: '✓';
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .matiere-task-body { flex: 1; min-width: 0; }
+  .matiere-task-desc { font-size: 14px; font-weight: 500; line-height: 1.4; }
+  .matiere-task-desc.done {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+  .matiere-task-date { font-size: 12px; color: var(--text-xsoft); margin-top: 3px; }
+  .matiere-task-date.late { color: var(--red); font-weight: 600; }
+  .matiere-task-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-xsoft);
+    font-size: 16px;
+    padding: 2px;
+  }
+  .matiere-task-section {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 10px 0 4px;
+  }
+  .matiere-task-empty {
+    text-align: center;
+    padding: 30px 0;
+    color: var(--text-xsoft);
+    font-size: 14px;
+  }
 
   /* ICS section */
   .ics-section { padding: 14px 16px; }
@@ -550,6 +658,18 @@
     </div>
   </div>
 
+</div>
+
+<!-- MODALE MATIÈRE -->
+<div class="matiere-modal-overlay" id="matiere-modal-overlay" onclick="closeMatiereModalOutside(event)">
+  <div class="matiere-modal">
+    <div class="matiere-modal-head">
+      <div class="matiere-modal-handle"></div>
+      <div class="matiere-modal-title" id="matiere-modal-title">Matière</div>
+      <div class="matiere-modal-sub" id="matiere-modal-sub"></div>
+    </div>
+    <div class="matiere-modal-body" id="matiere-modal-body"></div>
+  </div>
 </div>
 
 <!-- MODALE TODO -->
@@ -798,11 +918,22 @@ function renderStats() {
   Object.entries(matieres).sort((a,b) => b[1].count - a[1].count).forEach(([name, info]) => {
     const el = document.createElement('div');
     el.className = 'matiere-row';
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('aria-label', `Voir les tâches de ${name}`);
     el.innerHTML = `
       <div class="matiere-dot" style="background:${info.color || '#1a56db'}"></div>
       <div class="matiere-name">${name}</div>
       <div class="matiere-count">${info.done}/${info.count}</div>
+      <div class="matiere-chevron">›</div>
     `;
+    el.onclick = () => openMatiereModal(name);
+    el.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openMatiereModal(name);
+      }
+    };
     ml.appendChild(el);
   });
   if (!Object.keys(matieres).length) {
@@ -878,6 +1009,112 @@ function saveDevoir() {
   save();
   closeModal();
   renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+}
+
+// ── MODALE MATIÈRE ──
+function openMatiereModal(matiere) {
+  const modal = document.getElementById('matiere-modal-overlay');
+  const title = document.getElementById('matiere-modal-title');
+  const sub = document.getElementById('matiere-modal-sub');
+  const body = document.getElementById('matiere-modal-body');
+
+  const tasks = devoirs.filter(d => d.matiere === matiere);
+  const done = tasks.filter(d => d.done).length;
+  const pending = tasks.filter(d => !d.done).length;
+  const today = isoDate(new Date());
+
+  title.textContent = matiere;
+  sub.textContent = `${done} terminée${done > 1 ? 's' : ''} · ${pending} à faire`;
+
+  if (tasks.length === 0) {
+    body.innerHTML = '<div class="matiere-task-empty">Aucune tâche pour cette matière.</div>';
+  } else {
+    const pendingTasks = [...tasks]
+      .filter(d => !d.done)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    const doneTasks = [...tasks]
+      .filter(d => d.done)
+      .sort((a, b) => b.date.localeCompare(a.date));
+
+    body.innerHTML = '';
+
+    if (pendingTasks.length) {
+      const heading = document.createElement('div');
+      heading.className = 'matiere-task-section';
+      heading.textContent = `À faire (${pendingTasks.length})`;
+      body.appendChild(heading);
+
+      pendingTasks.forEach(dv => appendMatiereTask(body, dv, today));
+    }
+
+    if (doneTasks.length) {
+      const heading = document.createElement('div');
+      heading.className = 'matiere-task-section';
+      heading.textContent = `Terminées (${doneTasks.length})`;
+      body.appendChild(heading);
+
+      doneTasks.forEach(dv => appendMatiereTask(body, dv, today));
+    }
+  }
+
+  modal.classList.add('open');
+}
+
+function appendMatiereTask(body, dv, today) {
+  const item = document.createElement('div');
+  item.className = 'matiere-task';
+  const isLate = !dv.done && dv.date < today;
+
+  item.innerHTML = `
+    <div class="matiere-task-check${dv.done ? ' checked' : ''}" onclick="toggleDoneFromMatiere('${dv.id}')"></div>
+    <div class="matiere-task-body">
+      <div class="matiere-task-desc${dv.done ? ' done' : ''}">${dv.desc}</div>
+      <div class="matiere-task-date${isLate ? ' late' : ''}">
+        ${isLate ? '⚠️ En retard — ' : ''}Pour le ${formatDateFR(dv.date)}
+      </div>
+    </div>
+    <button class="matiere-task-delete" onclick="deleteFromMatiere('${dv.id}')">✕</button>
+  `;
+  body.appendChild(item);
+}
+
+function toggleDoneFromMatiere(id) {
+  const dv = devoirs.find(d => d.id === id);
+  if (!dv) return;
+  const matiere = dv.matiere;
+  toggleDone(id);
+  openMatiereModal(matiere);
+}
+
+function deleteFromMatiere(id) {
+  const dv = devoirs.find(d => d.id === id);
+  if (!dv) return;
+  if (!confirm('Supprimer ce devoir ?')) return;
+
+  const matiere = dv.matiere;
+  devoirs = devoirs.filter(d => d.id !== id);
+  save();
+  renderStrip();
+  renderDevoirs();
+  renderSemaine();
+  renderStats();
+
+  if (devoirs.some(d => d.matiere === matiere)) {
+    openMatiereModal(matiere);
+  } else {
+    closeMatiereModal();
+  }
+}
+
+function closeMatiereModal() {
+  document.getElementById('matiere-modal-overlay').classList.remove('open');
+}
+
+function closeMatiereModalOutside(e) {
+  if (e.target === document.getElementById('matiere-modal-overlay')) {
+    closeMatiereModal();
+  }
 }
 
 // ── MODALE TODO ──
