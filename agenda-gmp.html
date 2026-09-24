@@ -421,6 +421,75 @@
     display: flex;
     justify-content: space-between;
   }
+
+  /* MODALE TODO */
+  .todo-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .todo-modal-overlay.open { opacity: 1; pointer-events: all; }
+  .todo-modal {
+    background: var(--card);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+  }
+  .todo-modal-overlay.open .todo-modal { transform: translateY(0); }
+  .todo-modal-head {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .todo-modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 14px; }
+  .todo-modal-title { font-size: 17px; font-weight: 700; }
+  .todo-modal-sub { font-size: 13px; color: var(--text-soft); margin-top: 2px; }
+  .todo-modal-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    flex: 1;
+  }
+  .todo-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .todo-item:last-child { border-bottom: none; }
+  .todo-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+    margin-top: 1px;
+  }
+  .todo-check.checked { background: var(--green); border-color: var(--green); }
+  .todo-check.checked::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 700; }
+  .todo-body { flex: 1; min-width: 0; }
+  .todo-matiere { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
+  .todo-desc { font-size: 14px; font-weight: 500; line-height: 1.4; }
+  .todo-desc.done-text { text-decoration: line-through; opacity: 0.5; }
+  .todo-date { font-size: 12px; color: var(--text-xsoft); margin-top: 3px; }
+  .todo-date.late { color: var(--red); font-weight: 600; }
+  .todo-empty { text-align: center; padding: 30px 0; color: var(--text-xsoft); font-size: 14px; }
 </style>
 </head>
 <body>
@@ -481,6 +550,18 @@
     </div>
   </div>
 
+</div>
+
+<!-- MODALE TODO -->
+<div class="todo-modal-overlay" id="todo-modal-overlay" onclick="closeTodoModalOutside(event)">
+  <div class="todo-modal">
+    <div class="todo-modal-head">
+      <div class="todo-modal-handle"></div>
+      <div class="todo-modal-title">À faire</div>
+      <div class="todo-modal-sub" id="todo-modal-sub"></div>
+    </div>
+    <div class="todo-modal-body" id="todo-modal-body"></div>
+  </div>
 </div>
 
 <!-- FAB -->
@@ -683,10 +764,10 @@ function renderStats() {
 
   const grid = document.getElementById('stats-grid');
   grid.innerHTML = `
-    <div class="stat-card">
+    <div class="stat-card" onclick="openTodoModal()" style="cursor:pointer;border:1.5px solid var(--blue);">
       <div class="stat-num">${pending}</div>
       <div class="stat-label">À faire</div>
-      <div class="stat-sub">${done} terminé${done > 1 ? 's' : ''}</div>
+      <div class="stat-sub">${done} terminé${done > 1 ? 's' : ''} · voir →</div>
     </div>
     <div class="stat-card">
       <div class="stat-num" style="color:${late > 0 ? 'var(--red)' : 'var(--green)'}">${late}</div>
@@ -797,6 +878,50 @@ function saveDevoir() {
   save();
   closeModal();
   renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+}
+
+// ── MODALE TODO ──
+function openTodoModal() {
+  const today = isoDate(new Date());
+  const pending = devoirs.filter(d => !d.done);
+  const body = document.getElementById('todo-modal-body');
+  const sub = document.getElementById('todo-modal-sub');
+  sub.textContent = pending.length + ' devoir' + (pending.length > 1 ? 's' : '') + ' restant' + (pending.length > 1 ? 's' : '');
+
+  if (pending.length === 0) {
+    body.innerHTML = '<div class="todo-empty">🎉 Tout est fait !</div>';
+  } else {
+    // Trier par date
+    const sorted = [...pending].sort((a, b) => a.date.localeCompare(b.date));
+    body.innerHTML = '';
+    sorted.forEach(dv => {
+      const isLate = dv.date < today;
+      const item = document.createElement('div');
+      item.className = 'todo-item';
+      item.innerHTML = `
+        <div class="todo-check${dv.done ? ' checked' : ''}" onclick="toggleDoneTodo('${dv.id}')"></div>
+        <div class="todo-body">
+          <div class="todo-matiere" style="color:${dv.color || '#1a56db'}">${dv.matiere}</div>
+          <div class="todo-desc${dv.done ? ' done-text' : ''}">${dv.desc}</div>
+          <div class="todo-date${isLate ? ' late' : ''}">${isLate ? '⚠️ En retard — ' : ''}Pour le ${formatDateFR(dv.date)}</div>
+        </div>
+      `;
+      body.appendChild(item);
+    });
+  }
+  document.getElementById('todo-modal-overlay').classList.add('open');
+}
+
+function toggleDoneTodo(id) {
+  toggleDone(id);
+  // Rafraîchir la modale
+  openTodoModal();
+}
+
+function closeTodoModalOutside(e) {
+  if (e.target === document.getElementById('todo-modal-overlay')) {
+    document.getElementById('todo-modal-overlay').classList.remove('open');
+  }
 }
 
 // ── SECTION NAV ──
