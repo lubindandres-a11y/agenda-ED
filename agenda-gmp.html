@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mon Agenda BUT GMP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1a56db;
+    --blue-light: #e8effe;
+    --blue-mid: #3b71f3;
+    --green: #0e9f6e;
+    --green-light: #def7ec;
+    --red: #e02424;
+    --red-light: #fde8e8;
+    --orange: #ff8a00;
+    --orange-light: #fff3e0;
+    --purple: #7e3af2;
+    --purple-light: #edebfe;
+    --text: #111827;
+    --text-soft: #6b7280;
+    --text-xsoft: #9ca3af;
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --nav-h: 64px;
+    --top-h: 56px;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+  body { display: flex; flex-direction: column; overflow: hidden; }
+
+  /* TOP BAR */
+  .topbar {
+    height: var(--top-h);
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    padding-top: env(safe-area-inset-top, 0px);
+    flex-shrink: 0;
+  }
+  .topbar-title { color: #fff; font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+  .topbar-sub { color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 400; margin-top: 1px; }
+  .topbar-left { display: flex; flex-direction: column; }
+  .topbar-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* MAIN SCROLL AREA */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* SECTION VISIBILITY */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ───── DEVOIRS ───── */
+  .week-strip {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px 8px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .week-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .week-label { font-size: 14px; font-weight: 600; color: var(--text); }
+  .week-arrow {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text-soft);
+  }
+  .days-row {
+    display: flex;
+    gap: 6px;
+  }
+  .day-pill {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 4px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background 0.15s;
+  }
+  .day-pill.active { background: var(--blue); }
+  .day-pill.today:not(.active) { border-color: var(--blue); }
+  .day-pill-name { font-size: 10px; font-weight: 500; color: var(--text-xsoft); text-transform: uppercase; letter-spacing: 0.5px; }
+  .day-pill.active .day-pill-name { color: rgba(255,255,255,0.7); }
+  .day-pill-num { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .day-pill.active .day-pill-num { color: #fff; }
+  .day-pill-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); margin-top: 3px; }
+  .day-pill.active .day-pill-dot { background: rgba(255,255,255,0.6); }
+  .day-pill-dot.hidden { opacity: 0; }
+
+  .devoirs-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  .devoir-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border-left: 4px solid var(--blue);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .devoir-card.done { opacity: 0.55; }
+  .devoir-card.done .devoir-titre { text-decoration: line-through; }
+  .devoir-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+    margin-top: 1px;
+  }
+  .devoir-check.checked { background: var(--green); border-color: var(--green); }
+  .devoir-check.checked::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 700; }
+  .devoir-body { flex: 1; min-width: 0; }
+  .devoir-matiere { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--blue); margin-bottom: 3px; }
+  .devoir-titre { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .devoir-meta { font-size: 12px; color: var(--text-xsoft); margin-top: 4px; }
+  .devoir-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-xsoft);
+    font-size: 16px;
+    padding: 2px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .empty-day {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-xsoft);
+    font-size: 14px;
+  }
+  .empty-day .emoji { font-size: 36px; display: block; margin-bottom: 10px; }
+
+  /* SEMAINE RESUME */
+  .resume-section { padding: 12px 16px; }
+  .resume-title { font-size: 13px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .resume-row {
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .resume-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .resume-item:last-child { border-bottom: none; }
+  .resume-item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .resume-item-day { font-size: 12px; font-weight: 600; color: var(--text-soft); width: 28px; flex-shrink: 0; }
+  .resume-item-text { font-size: 13px; color: var(--text); flex: 1; }
+  .resume-item-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+
+  /* FAB */
+  .fab {
+    position: fixed;
+    bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    width: 52px;
+    height: 52px;
+    background: var(--blue);
+    border-radius: 50%;
+    border: none;
+    color: #fff;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(26,86,219,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  .fab.hidden { display: none; }
+
+  /* ───── MODAL AJOUT ───── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--card);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+  .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+  .field { margin-bottom: 12px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px; }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--blue); background: #fff; }
+  .field textarea { resize: none; height: 80px; }
+  .colors-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .color-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.1s;
+  }
+  .color-btn.selected { border-color: var(--text); }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .btn-cancel {
+    flex: 1;
+    padding: 13px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-save {
+    flex: 2;
+    padding: 13px;
+    border-radius: 12px;
+    border: none;
+    background: var(--blue);
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ───── ICS MODAL ───── */
+  .ics-info {
+    background: var(--blue-light);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 13px;
+    color: var(--blue);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  /* ───── BOTTOM NAV ───── */
+  .bottom-nav {
+    height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: inherit;
+  }
+  .nav-icon { font-size: 22px; line-height: 1; }
+  .nav-label { font-size: 10px; font-weight: 500; color: var(--text-xsoft); }
+  .nav-item.active .nav-label { color: var(--blue); font-weight: 600; }
+  .nav-item.active .nav-icon { filter: none; }
+
+  /* ───── STATS ───── */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 16px; }
+  .stat-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--text); }
+  .stat-label { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+  .stat-sub { font-size: 11px; color: var(--text-xsoft); margin-top: 6px; }
+
+  .matiere-list { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .matiere-row {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--border);
+  }
+  .matiere-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .matiere-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .matiere-count { font-size: 13px; color: var(--text-soft); }
+
+  /* ICS section */
+  .ics-section { padding: 14px 16px; }
+  .ics-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .ics-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .ics-desc { font-size: 13px; color: var(--text-soft); margin-bottom: 12px; line-height: 1.5; }
+  .ics-steps { font-size: 13px; color: var(--text-soft); line-height: 1.8; padding-left: 4px; }
+  .ics-steps span { color: var(--blue); font-weight: 600; }
+  .ics-input-row { display: flex; gap: 8px; margin-top: 12px; }
+  .ics-input-row input {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    color: var(--text);
+  }
+  .ics-input-row input:focus { border-color: var(--blue); }
+  .ics-btn {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .ics-status { margin-top: 10px; font-size: 13px; padding: 10px 12px; border-radius: 8px; display: none; }
+  .ics-status.ok { background: var(--green-light); color: var(--green); display: block; }
+  .ics-status.err { background: var(--red-light); color: var(--red); display: block; }
+  .cours-import-list { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .cours-import-item {
+    background: var(--blue-light);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--blue);
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">Mon Agenda</span>
+    <span class="topbar-sub" id="topbar-sub">BUT GMP</span>
+  </div>
+  <button class="topbar-btn" onclick="openModal()">+ Devoir</button>
+</div>
+
+<div class="main" id="main">
+
+  <!-- ── SECTION DEVOIRS ── -->
+  <div class="section active" id="sec-devoirs">
+    <div class="week-strip">
+      <div class="week-nav">
+        <button class="week-arrow" onclick="changeWeek(-1)">‹</button>
+        <span class="week-label" id="week-label"></span>
+        <button class="week-arrow" onclick="changeWeek(1)">›</button>
+      </div>
+      <div class="days-row" id="days-row"></div>
+    </div>
+    <div class="devoirs-list" id="devoirs-list"></div>
+  </div>
+
+  <!-- ── SECTION SEMAINE ── -->
+  <div class="section" id="sec-semaine">
+    <div class="resume-section">
+      <div class="resume-title">Cette semaine</div>
+      <div class="resume-row" id="resume-row"></div>
+    </div>
+  </div>
+
+  <!-- ── SECTION STATS ── -->
+  <div class="section" id="sec-stats">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="resume-title" style="padding: 0 16px 8px; font-size:13px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.5px; font-weight:600;">Par matière</div>
+    <div class="matiere-list" id="matiere-list"></div>
+    <div class="ics-section">
+      <div class="ics-card">
+        <div class="ics-title">📅 Importer mon EDT Nantes Université</div>
+        <div class="ics-desc">Tu peux importer ton emploi du temps BUT GMP directement depuis Celcat (Nantes Université). Ton EDT se mettra à jour automatiquement.</div>
+        <div class="ics-steps">
+          1. Va sur <span>edt.univ-nantes.fr</span> (ta composante)<br>
+          2. Trouve ton groupe BUT GMP<br>
+          3. Copie l'URL du format <span>.ics</span><br>
+          4. Colle-la ici ↓
+        </div>
+        <div class="ics-input-row">
+          <input type="url" id="ics-url" placeholder="https://edt.univ-nantes.fr/…/groupe.ics">
+          <button class="ics-btn" onclick="loadICS()">Importer</button>
+        </div>
+        <div class="ics-status" id="ics-status"></div>
+        <div class="cours-import-list" id="cours-import-list"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openModal()">+</button>
+
+<!-- MODAL AJOUT DEVOIR -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nouveau devoir</div>
+    <div class="field">
+      <label>Matière</label>
+      <input type="text" id="f-matiere" placeholder="ex. Mécanique, CAO, Maths…" list="matieres-list">
+      <datalist id="matieres-list"></datalist>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="f-desc" placeholder="Quoi faire ?"></textarea>
+    </div>
+    <div class="field">
+      <label>Pour le</label>
+      <input type="date" id="f-date">
+    </div>
+    <div class="field">
+      <label>Couleur</label>
+      <div class="colors-row" id="colors-row"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="saveDevoir()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="nav-devoirs" onclick="showSection('devoirs')">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">Devoirs</span>
+  </button>
+  <button class="nav-item" id="nav-semaine" onclick="showSection('semaine')">
+    <span class="nav-icon">📆</span>
+    <span class="nav-label">Semaine</span>
+  </button>
+  <button class="nav-item" id="nav-stats" onclick="showSection('stats')">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label">Réglages</span>
+  </button>
+</nav>
+
+<script>
+// ── STATE ──
+const COLORS = [
+  { name: 'Bleu',    val: '#1a56db' },
+  { name: 'Vert',    val: '#0e9f6e' },
+  { name: 'Rouge',   val: '#e02424' },
+  { name: 'Orange',  val: '#ff8a00' },
+  { name: 'Violet',  val: '#7e3af2' },
+  { name: 'Rose',    val: '#e74694' },
+];
+
+let devoirs = JSON.parse(localStorage.getItem('devoirs') || '[]');
+let selectedColor = COLORS[0].val;
+let currentWeekOffset = 0;
+let selectedDayIndex = new Date().getDay() === 0 ? 0 : new Date().getDay() - 1; // lun=0
+if (selectedDayIndex < 0 || selectedDayIndex > 4) selectedDayIndex = 0;
+
+function save() {
+  localStorage.setItem('devoirs', JSON.stringify(devoirs));
+}
+
+// ── DATE UTILS ──
+function getWeekStart(offset = 0) {
+  const d = new Date();
+  const day = d.getDay(); // 0=dim
+  const diff = (day === 0 ? -6 : 1 - day) + offset * 7;
+  const mon = new Date(d);
+  mon.setDate(d.getDate() + diff);
+  mon.setHours(0,0,0,0);
+  return mon;
+}
+
+function isoDate(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function formatDateFR(iso) {
+  const [y, m, day] = iso.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function weekDays(offset = 0) {
+  const mon = getWeekStart(offset);
+  return Array.from({length: 5}, (_, i) => {
+    const d = new Date(mon);
+    d.setDate(mon.getDate() + i);
+    return d;
+  });
+}
+
+const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
+const DAY_NAMES_FULL = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+
+// ── RENDER WEEK STRIP ──
+function renderStrip() {
+  const days = weekDays(currentWeekOffset);
+  const today = isoDate(new Date());
+  const mon = days[0];
+  const sun = days[4];
+  const opts = { day:'numeric', month:'short' };
+  document.getElementById('week-label').textContent =
+    mon.toLocaleDateString('fr-FR', opts) + ' – ' + sun.toLocaleDateString('fr-FR', opts);
+
+  const row = document.getElementById('days-row');
+  row.innerHTML = '';
+  days.forEach((d, i) => {
+    const iso = isoDate(d);
+    const hasDevoirThisDay = devoirs.some(dv => dv.date === iso && !dv.done);
+    const pill = document.createElement('div');
+    pill.className = 'day-pill' + (i === selectedDayIndex ? ' active' : '') + (iso === today ? ' today' : '');
+    pill.innerHTML = `
+      <span class="day-pill-name">${DAY_NAMES[i]}</span>
+      <span class="day-pill-num">${d.getDate()}</span>
+      <span class="day-pill-dot${hasDevoirThisDay ? '' : ' hidden'}"></span>
+    `;
+    pill.onclick = () => { selectedDayIndex = i; renderStrip(); renderDevoirs(); };
+    row.appendChild(pill);
+  });
+}
+
+// ── RENDER DEVOIRS DAY ──
+function renderDevoirs() {
+  const days = weekDays(currentWeekOffset);
+  const day = days[selectedDayIndex];
+  const iso = isoDate(day);
+  const list = document.getElementById('devoirs-list');
+  const daysDevoirs = devoirs.filter(d => d.date === iso);
+
+  // topbar sub
+  document.getElementById('topbar-sub').textContent = DAY_NAMES_FULL[selectedDayIndex] + ' ' + formatDateFR(iso);
+
+  if (daysDevoirs.length === 0) {
+    list.innerHTML = `<div class="empty-day"><span class="emoji">✅</span>Rien à faire ce jour.<br>Profites-en !</div>`;
+    return;
+  }
+
+  list.innerHTML = '';
+  daysDevoirs.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'devoir-card' + (d.done ? ' done' : '');
+    card.style.borderLeftColor = d.color || '#1a56db';
+    card.innerHTML = `
+      <div class="devoir-check${d.done ? ' checked' : ''}" onclick="toggleDone('${d.id}')"></div>
+      <div class="devoir-body">
+        <div class="devoir-matiere" style="color:${d.color || '#1a56db'}">${d.matiere}</div>
+        <div class="devoir-titre">${d.desc}</div>
+        <div class="devoir-meta">Pour le ${formatDateFR(d.date)}</div>
+      </div>
+      <button class="devoir-delete" onclick="deleteDevoir('${d.id}')">✕</button>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ── RENDER SEMAINE ──
+function renderSemaine() {
+  const days = weekDays(currentWeekOffset);
+  const row = document.getElementById('resume-row');
+  row.innerHTML = '';
+  let any = false;
+  days.forEach((d, i) => {
+    const iso = isoDate(d);
+    const daysDevoirs = devoirs.filter(dv => dv.date === iso && !dv.done);
+    if (daysDevoirs.length === 0) return;
+    any = true;
+    daysDevoirs.forEach(dv => {
+      const item = document.createElement('div');
+      item.className = 'resume-item';
+      item.onclick = () => { showSection('devoirs'); selectedDayIndex = i; renderStrip(); renderDevoirs(); };
+      item.innerHTML = `
+        <div class="resume-item-dot" style="background:${dv.color || '#1a56db'}"></div>
+        <div class="resume-item-day">${DAY_NAMES[i]}</div>
+        <div class="resume-item-text">${dv.matiere} — ${dv.desc}</div>
+      `;
+      row.appendChild(item);
+    });
+  });
+  if (!any) {
+    row.innerHTML = `<div class="empty-day"><span class="emoji">🎉</span>Aucun devoir cette semaine !</div>`;
+  }
+}
+
+// ── RENDER STATS ──
+function renderStats() {
+  const total = devoirs.length;
+  const done = devoirs.filter(d => d.done).length;
+  const pending = total - done;
+  const today = isoDate(new Date());
+  const late = devoirs.filter(d => !d.done && d.date < today).length;
+
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-num">${pending}</div>
+      <div class="stat-label">À faire</div>
+      <div class="stat-sub">${done} terminé${done > 1 ? 's' : ''}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:${late > 0 ? 'var(--red)' : 'var(--green)'}">${late}</div>
+      <div class="stat-label">En retard</div>
+      <div class="stat-sub">${total} au total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">${total > 0 ? Math.round(done/total*100) : 0}%</div>
+      <div class="stat-label">Complétés</div>
+      <div class="stat-sub">taux de complétion</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">${[...new Set(devoirs.map(d => d.matiere))].length}</div>
+      <div class="stat-label">Matières</div>
+      <div class="stat-sub">distinctes</div>
+    </div>
+  `;
+
+  // Par matière
+  const matieres = {};
+  devoirs.forEach(d => {
+    if (!matieres[d.matiere]) matieres[d.matiere] = { count: 0, done: 0, color: d.color };
+    matieres[d.matiere].count++;
+    if (d.done) matieres[d.matiere].done++;
+  });
+  const ml = document.getElementById('matiere-list');
+  ml.innerHTML = '';
+  Object.entries(matieres).sort((a,b) => b[1].count - a[1].count).forEach(([name, info]) => {
+    const el = document.createElement('div');
+    el.className = 'matiere-row';
+    el.innerHTML = `
+      <div class="matiere-dot" style="background:${info.color || '#1a56db'}"></div>
+      <div class="matiere-name">${name}</div>
+      <div class="matiere-count">${info.done}/${info.count}</div>
+    `;
+    ml.appendChild(el);
+  });
+  if (!Object.keys(matieres).length) {
+    ml.innerHTML = `<div style="color:var(--text-xsoft);font-size:13px;padding:12px 0;">Aucun devoir pour l'instant</div>`;
+  }
+}
+
+// ── ACTIONS ──
+function toggleDone(id) {
+  const dv = devoirs.find(d => d.id === id);
+  if (dv) { dv.done = !dv.done; save(); renderStrip(); renderDevoirs(); renderSemaine(); renderStats(); }
+}
+
+function deleteDevoir(id) {
+  if (!confirm('Supprimer ce devoir ?')) return;
+  devoirs = devoirs.filter(d => d.id !== id);
+  save();
+  renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+}
+
+function changeWeek(dir) {
+  currentWeekOffset += dir;
+  const today = new Date();
+  const todayDay = today.getDay() === 0 ? 4 : today.getDay() - 1;
+  if (currentWeekOffset === 0) selectedDayIndex = Math.min(todayDay, 4);
+  else selectedDayIndex = 0;
+  renderStrip(); renderDevoirs(); renderSemaine();
+}
+
+// ── MODAL ──
+function openModal() {
+  // préremplir date avec le jour sélectionné
+  const days = weekDays(currentWeekOffset);
+  const sel = days[selectedDayIndex];
+  document.getElementById('f-date').value = isoDate(sel);
+  document.getElementById('f-matiere').value = '';
+  document.getElementById('f-desc').value = '';
+  // couleurs
+  const cr = document.getElementById('colors-row');
+  cr.innerHTML = '';
+  COLORS.forEach(c => {
+    const btn = document.createElement('div');
+    btn.className = 'color-btn' + (c.val === selectedColor ? ' selected' : '');
+    btn.style.background = c.val;
+    btn.onclick = () => { selectedColor = c.val; document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); };
+    cr.appendChild(btn);
+  });
+  // datalist
+  const dl = document.getElementById('matieres-list');
+  dl.innerHTML = '';
+  [...new Set(devoirs.map(d => d.matiere))].forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    dl.appendChild(opt);
+  });
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function saveDevoir() {
+  const matiere = document.getElementById('f-matiere').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+  const date = document.getElementById('f-date').value;
+  if (!matiere || !desc || !date) { alert('Remplis tous les champs !'); return; }
+  devoirs.push({ id: Date.now().toString(), matiere, desc, date, color: selectedColor, done: false });
+  save();
+  closeModal();
+  renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+}
+
+// ── SECTION NAV ──
+function showSection(name) {
+  ['devoirs','semaine','stats'].forEach(s => {
+    document.getElementById('sec-' + s).classList.toggle('active', s === name);
+    document.getElementById('nav-' + s).classList.toggle('active', s === name);
+  });
+  document.getElementById('fab').classList.toggle('hidden', name !== 'devoirs');
+  if (name === 'devoirs') { document.getElementById('topbar-sub').textContent = 'BUT GMP'; renderStrip(); renderDevoirs(); }
+  if (name === 'semaine') renderSemaine();
+  if (name === 'stats') renderStats();
+}
+
+// ── ICS IMPORT ──
+async function loadICS() {
+  const url = document.getElementById('ics-url').value.trim();
+  const status = document.getElementById('ics-status');
+  const cl = document.getElementById('cours-import-list');
+  if (!url) { status.className='ics-status err'; status.textContent='Colle une URL ICS d\'abord.'; return; }
+
+  status.className='ics-status'; status.textContent='Chargement…'; status.style.display='block';
+
+  // On passe par un proxy CORS public pour récupérer le .ics
+  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+  try {
+    const res = await fetch(proxyUrl);
+    const data = await res.json();
+    if (!data.contents) throw new Error('Réponse vide');
+    const events = parseICS(data.contents);
+    localStorage.setItem('ics-url', url);
+    localStorage.setItem('ics-events', JSON.stringify(events));
+    status.className='ics-status ok';
+    status.textContent = `✅ ${events.length} cours importés !`;
+    cl.innerHTML = '';
+    events.slice(0, 8).forEach(ev => {
+      const d = document.createElement('div');
+      d.className = 'cours-import-item';
+      d.innerHTML = `<span>${ev.summary}</span><span>${ev.date}</span>`;
+      cl.appendChild(d);
+    });
+    if (events.length > 8) {
+      const more = document.createElement('div');
+      more.style = 'font-size:12px;color:var(--text-soft);padding:4px 0;';
+      more.textContent = `+ ${events.length - 8} autres cours`;
+      cl.appendChild(more);
+    }
+  } catch(e) {
+    status.className='ics-status err';
+    status.textContent = '❌ Impossible de charger. Vérifie l\'URL ou si le serveur autorise l\'accès externe.';
+  }
+}
+
+function parseICS(text) {
+  const events = [];
+  const blocks = text.split('BEGIN:VEVENT');
+  blocks.slice(1).forEach(block => {
+    const summary = (block.match(/SUMMARY[^:]*:(.+)/)?.[1] || '').trim();
+    const dtstart = block.match(/DTSTART[^:]*:(\d{8})/)?.[1];
+    if (!summary || !dtstart) return;
+    const y = dtstart.slice(0,4), m = dtstart.slice(4,6), d = dtstart.slice(6,8);
+    events.push({ summary, date: `${d}/${m}/${y}` });
+  });
+  return events;
+}
+
+// ── INIT ──
+function init() {
+  // Aujourd'hui par défaut
+  const tod = new Date().getDay();
+  selectedDayIndex = tod === 0 || tod === 6 ? 0 : tod - 1;
+  renderStrip();
+  renderDevoirs();
+  // ICS sauvegardé
+  const savedUrl = localStorage.getItem('ics-url');
+  if (savedUrl) document.getElementById('ics-url').value = savedUrl;
+}
+
+init();
+</script>
+</body>
+</html>
