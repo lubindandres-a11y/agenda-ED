@@ -137,6 +137,7 @@
     align-items: flex-start;
     border-left: 4px solid var(--blue);
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    position: relative;
   }
   .devoir-card.done { opacity: 0.55; }
   .devoir-card.done .devoir-titre { text-decoration: line-through; }
@@ -576,6 +577,82 @@
     border-bottom: 1px solid var(--border);
   }
   .todo-item:last-child { border-bottom: none; }
+  .todo-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-xsoft);
+    font-size: 15px;
+    padding: 4px;
+    line-height: 1;
+    flex-shrink: 0;
+    align-self: center;
+    transition: color 0.15s;
+  }
+  .todo-edit:hover { color: var(--blue); }
+  .todo-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-xsoft);
+    font-size: 15px;
+    padding: 4px;
+    line-height: 1;
+    flex-shrink: 0;
+    align-self: center;
+    transition: color 0.15s;
+  }
+  .todo-delete:hover { color: var(--red); }
+
+  /* ── Bandeau suppression ── */
+  .delete-confirm-bar {
+    position: fixed;
+    bottom: calc(var(--nav-h) + 12px + env(safe-area-inset-bottom, 0px));
+    left: 16px;
+    right: 16px;
+    background: #1f2937;
+    color: #fff;
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transform: translateY(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .delete-confirm-bar.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+  .delete-confirm-text { flex: 1; font-size: 14px; font-weight: 500; }
+  .delete-confirm-text span { color: #9ca3af; font-size: 12px; display: block; margin-top: 1px; }
+  .delete-confirm-no {
+    background: #374151;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .delete-confirm-yes {
+    background: var(--red);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-family: inherit;
+  }
   .todo-check {
     width: 24px;
     height: 24px;
@@ -598,6 +675,109 @@
   .todo-date { font-size: 12px; color: var(--text-xsoft); margin-top: 3px; }
   .todo-date.late { color: var(--red); font-weight: 600; }
   .todo-empty { text-align: center; padding: 30px 0; color: var(--text-xsoft); font-size: 14px; }
+
+  /* ───── MODALE ÉDITION ───── */
+  .edit-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 300;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .edit-modal-overlay.open { opacity: 1; pointer-events: all; }
+  .edit-modal {
+    background: var(--card);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    padding: 20px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  .edit-modal-overlay.open .edit-modal { transform: translateY(0); }
+  .edit-modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+  .edit-modal-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .edit-modal-subtitle { font-size: 13px; color: var(--text-soft); margin-bottom: 18px; }
+  .edit-preview {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    border-left: 4px solid var(--blue);
+    font-size: 13px;
+    color: var(--text-soft);
+    line-height: 1.6;
+  }
+  .edit-preview strong { color: var(--text); font-weight: 600; }
+  .edit-change-indicator {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    margin-top: 6px;
+    display: none;
+  }
+  .edit-change-indicator.visible { display: block; }
+
+  /* bouton crayon sur les cartes */
+  .devoir-edit, .matiere-task-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-xsoft);
+    font-size: 15px;
+    padding: 4px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .devoir-edit:hover, .matiere-task-edit:hover { color: var(--blue); }
+
+  /* Confirmation suppression inline sur la carte */
+  .devoir-confirm-delete {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.97);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    gap: 10px;
+    z-index: 5;
+  }
+  .devoir-confirm-delete span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--red);
+    flex: 1;
+  }
+  .devoir-confirm-delete .btn-no {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .devoir-confirm-delete .btn-yes {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: none;
+    background: var(--red);
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+  }
 </style>
 </head>
 <body>
@@ -630,6 +810,10 @@
     <div class="resume-section">
       <div class="resume-title">Cette semaine</div>
       <div class="resume-row" id="resume-row"></div>
+    </div>
+    <div class="resume-section" style="padding-top:0">
+      <div class="resume-title">Semaine prochaine</div>
+      <div class="resume-row" id="resume-row-next"></div>
     </div>
   </div>
 
@@ -714,6 +898,60 @@
       <button class="btn-save" onclick="saveDevoir()">Enregistrer</button>
     </div>
   </div>
+</div>
+
+<!-- MODALE ÉDITION DEVOIR -->
+<div class="edit-modal-overlay" id="edit-modal-overlay" onclick="closeEditModalOutside(event)">
+  <div class="edit-modal">
+    <div class="edit-modal-handle"></div>
+    <div class="edit-modal-title">✏️ Modifier le devoir</div>
+    <div class="edit-modal-subtitle">Modifie les champs puis appuie sur Enregistrer.</div>
+    <div class="edit-preview" id="edit-preview">
+      <strong id="edit-preview-matiere"></strong><br>
+      <span id="edit-preview-desc"></span><br>
+      Pour le <span id="edit-preview-date"></span>
+      <div class="edit-change-indicator" id="edit-change-indicator">⚠️ Tu as modifié ce devoir — vérifie avant d'enregistrer.</div>
+    </div>
+    <div class="field">
+      <label>Matière</label>
+      <input type="text" id="ef-matiere" placeholder="ex. Mécanique, CAO…" list="edit-matieres-list" oninput="updateEditPreview()">
+      <datalist id="edit-matieres-list"></datalist>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="ef-desc" placeholder="Quoi faire ?" oninput="updateEditPreview()"></textarea>
+    </div>
+    <div class="field">
+      <label>Pour le</label>
+      <input type="date" id="ef-date" onchange="updateEditPreview()">
+    </div>
+    <div class="field">
+      <label>Couleur</label>
+      <div class="colors-row" id="edit-colors-row"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">Annuler</button>
+      <button class="btn-save" id="edit-save-btn" onclick="confirmEditDevoir()">Enregistrer</button>
+    </div>
+    <div id="edit-confirm-bar" style="display:none; margin-top:12px; background:var(--orange-light); border-radius:10px; padding:12px; font-size:13px; color:var(--orange);">
+      <div style="font-weight:600; margin-bottom:8px;">⚠️ Confirmer les modifications ?</div>
+      <div id="edit-confirm-changes" style="margin-bottom:10px; line-height:1.6;"></div>
+      <div style="display:flex; gap:8px;">
+        <button onclick="cancelConfirm()" style="flex:1;padding:9px;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);font-size:14px;font-weight:600;color:var(--text-soft);cursor:pointer;font-family:inherit;">Non</button>
+        <button onclick="applyEdit()" style="flex:2;padding:9px;border-radius:9px;border:none;background:var(--green);font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;">✓ Oui, enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BANDEAU SUPPRESSION -->
+<div class="delete-confirm-bar" id="delete-confirm-bar">
+  <div class="delete-confirm-text">
+    Supprimer ce devoir ?
+    <span id="delete-confirm-label"></span>
+  </div>
+  <button class="delete-confirm-no" onclick="cancelDelete()">Non</button>
+  <button class="delete-confirm-yes" onclick="applyDelete()">Supprimer</button>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -840,7 +1078,10 @@ function renderDevoirs() {
         <div class="devoir-titre">${d.desc}</div>
         <div class="devoir-meta">Pour le ${formatDateFR(d.date)}</div>
       </div>
-      <button class="devoir-delete" onclick="deleteDevoir('${d.id}')">✕</button>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+        <button class="devoir-edit" onclick="openEditModal('${d.id}')" title="Modifier">✏️</button>
+        <button class="devoir-delete" onclick="askDeleteDevoir(this, '${d.id}')">✕</button>
+      </div>
     `;
     list.appendChild(card);
   });
@@ -848,8 +1089,13 @@ function renderDevoirs() {
 
 // ── RENDER SEMAINE ──
 function renderSemaine() {
-  const days = weekDays(currentWeekOffset);
-  const row = document.getElementById('resume-row');
+  renderSemaineBlock('resume-row', currentWeekOffset, false);
+  renderSemaineBlock('resume-row-next', currentWeekOffset + 1, true);
+}
+
+function renderSemaineBlock(rowId, offset, isNext) {
+  const days = weekDays(offset);
+  const row = document.getElementById(rowId);
   row.innerHTML = '';
   let any = false;
   days.forEach((d, i) => {
@@ -860,7 +1106,11 @@ function renderSemaine() {
     daysDevoirs.forEach(dv => {
       const item = document.createElement('div');
       item.className = 'resume-item';
-      item.onclick = () => { showSection('devoirs'); selectedDayIndex = i; renderStrip(); renderDevoirs(); };
+      item.onclick = () => {
+        currentWeekOffset = offset;
+        selectedDayIndex = i;
+        showSection('devoirs');
+      };
       item.innerHTML = `
         <div class="resume-item-dot" style="background:${dv.color || '#1a56db'}"></div>
         <div class="resume-item-day">${DAY_NAMES[i]}</div>
@@ -870,7 +1120,9 @@ function renderSemaine() {
     });
   });
   if (!any) {
-    row.innerHTML = `<div class="empty-day"><span class="emoji">🎉</span>Aucun devoir cette semaine !</div>`;
+    const emoji = isNext ? '😴' : '🎉';
+    const msg = isNext ? 'Rien la semaine prochaine !' : 'Aucun devoir cette semaine !';
+    row.innerHTML = `<div class="empty-day"><span class="emoji">${emoji}</span>${msg}</div>`;
   }
 }
 
@@ -947,8 +1199,72 @@ function toggleDone(id) {
   if (dv) { dv.done = !dv.done; save(); renderStrip(); renderDevoirs(); renderSemaine(); renderStats(); }
 }
 
+let pendingDeleteId = null;
+let pendingDeleteContext = null; // 'card' | 'matiere' | 'todo'
+let deleteTimeout = null;
+
+function askDelete(id, context) {
+  const dv = devoirs.find(d => d.id === id);
+  if (!dv) return;
+  pendingDeleteId = id;
+  pendingDeleteContext = context;
+  document.getElementById('delete-confirm-label').textContent = dv.matiere + ' — ' + dv.desc;
+  const bar = document.getElementById('delete-confirm-bar');
+  bar.classList.add('show');
+  clearTimeout(deleteTimeout);
+  deleteTimeout = setTimeout(() => cancelDelete(), 5000);
+}
+
+function cancelDelete() {
+  pendingDeleteId = null;
+  pendingDeleteContext = null;
+  clearTimeout(deleteTimeout);
+  document.getElementById('delete-confirm-bar').classList.remove('show');
+}
+
+function applyDelete() {
+  const id = pendingDeleteId;
+  const context = pendingDeleteContext;
+  cancelDelete();
+  if (!id) return;
+
+  const dv = devoirs.find(d => d.id === id);
+  const matiere = dv ? dv.matiere : null;
+
+  devoirs = devoirs.filter(d => d.id !== id);
+  save();
+  renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+
+  if (context === 'matiere' && matiere) {
+    if (devoirs.some(d => d.matiere === matiere)) {
+      openMatiereModal(matiere);
+    } else {
+      closeMatiereModal();
+    }
+  } else if (context === 'todo') {
+    if (devoirs.filter(d => !d.done).length === 0) {
+      document.getElementById('todo-modal-overlay').classList.remove('open');
+    } else {
+      openTodoModal();
+    }
+  }
+}
+
+function askDeleteDevoir(btn, id) {
+  const card = btn.closest('.devoir-card');
+  const existing = card.querySelector('.devoir-confirm-delete');
+  if (existing) { existing.remove(); return; }
+  const panel = document.createElement('div');
+  panel.className = 'devoir-confirm-delete';
+  panel.innerHTML = `
+    <span>🗑️ Supprimer ?</span>
+    <button class="btn-no" onclick="this.closest('.devoir-confirm-delete').remove()">Non</button>
+    <button class="btn-yes" onclick="deleteDevoir('${id}')">Oui</button>
+  `;
+  card.appendChild(panel);
+}
+
 function deleteDevoir(id) {
-  if (!confirm('Supprimer ce devoir ?')) return;
   devoirs = devoirs.filter(d => d.id !== id);
   save();
   renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
@@ -1074,7 +1390,10 @@ function appendMatiereTask(body, dv, today) {
         ${isLate ? '⚠️ En retard — ' : ''}Pour le ${formatDateFR(dv.date)}
       </div>
     </div>
-    <button class="matiere-task-delete" onclick="deleteFromMatiere('${dv.id}')">✕</button>
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+      <button class="matiere-task-edit" onclick="openEditModal('${dv.id}')" title="Modifier">✏️</button>
+      <button class="matiere-task-delete" onclick="deleteFromMatiere('${dv.id}')">✕</button>
+    </div>
   `;
   body.appendChild(item);
 }
@@ -1087,25 +1406,7 @@ function toggleDoneFromMatiere(id) {
   openMatiereModal(matiere);
 }
 
-function deleteFromMatiere(id) {
-  const dv = devoirs.find(d => d.id === id);
-  if (!dv) return;
-  if (!confirm('Supprimer ce devoir ?')) return;
-
-  const matiere = dv.matiere;
-  devoirs = devoirs.filter(d => d.id !== id);
-  save();
-  renderStrip();
-  renderDevoirs();
-  renderSemaine();
-  renderStats();
-
-  if (devoirs.some(d => d.matiere === matiere)) {
-    openMatiereModal(matiere);
-  } else {
-    closeMatiereModal();
-  }
-}
+function deleteFromMatiere(id) { askDelete(id, 'matiere'); }
 
 function closeMatiereModal() {
   document.getElementById('matiere-modal-overlay').classList.remove('open');
@@ -1142,6 +1443,8 @@ function openTodoModal() {
           <div class="todo-desc${dv.done ? ' done-text' : ''}">${dv.desc}</div>
           <div class="todo-date${isLate ? ' late' : ''}">${isLate ? '⚠️ En retard — ' : ''}Pour le ${formatDateFR(dv.date)}</div>
         </div>
+        <button class="todo-edit" onclick="openEditFromTodo('${dv.id}')" title="Modifier">✏️</button>
+        <button class="todo-delete" onclick="deleteFromTodo('${dv.id}')" title="Supprimer">✕</button>
       `;
       body.appendChild(item);
     });
@@ -1151,8 +1454,14 @@ function openTodoModal() {
 
 function toggleDoneTodo(id) {
   toggleDone(id);
-  // Rafraîchir la modale
   openTodoModal();
+}
+
+function deleteFromTodo(id) { askDelete(id, 'todo'); }
+
+function openEditFromTodo(id) {
+  document.getElementById('todo-modal-overlay').classList.remove('open');
+  setTimeout(() => { openEditModal(id); editOrigin = 'todo'; }, 200);
 }
 
 function closeTodoModalOutside(e) {
@@ -1290,6 +1599,155 @@ function parseICS(text) {
     events.push({ summary, date: `${d}/${m}/${y}` });
   });
   return events;
+}
+
+// ── MODALE ÉDITION ──
+let editingId = null;
+let editOriginal = null;
+let editSelectedColor = null;
+let editOrigin = null; // 'todo' | 'matiere' | null
+
+function openEditModal(id) {
+  const dv = devoirs.find(d => d.id === id);
+  if (!dv) return;
+
+  editingId = id;
+  editOriginal = { matiere: dv.matiere, desc: dv.desc, date: dv.date, color: dv.color };
+  editSelectedColor = dv.color || COLORS[0].val;
+
+  // Pré-remplir les champs
+  document.getElementById('ef-matiere').value = dv.matiere;
+  document.getElementById('ef-desc').value = dv.desc;
+  document.getElementById('ef-date').value = dv.date;
+
+  // Datalist
+  const dl = document.getElementById('edit-matieres-list');
+  dl.innerHTML = '';
+  [...new Set(devoirs.map(d => d.matiere))].forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    dl.appendChild(opt);
+  });
+
+  // Couleurs
+  const cr = document.getElementById('edit-colors-row');
+  cr.innerHTML = '';
+  COLORS.forEach(c => {
+    const btn = document.createElement('div');
+    btn.className = 'color-btn' + (c.val === editSelectedColor ? ' selected' : '');
+    btn.style.background = c.val;
+    btn.title = c.name;
+    btn.onclick = () => {
+      editSelectedColor = c.val;
+      document.querySelectorAll('#edit-colors-row .color-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      updateEditPreview();
+    };
+    cr.appendChild(btn);
+  });
+
+  // Aperçu initial
+  document.getElementById('edit-preview').style.borderLeftColor = dv.color || '#1a56db';
+  document.getElementById('edit-preview-matiere').textContent = dv.matiere;
+  document.getElementById('edit-preview-desc').textContent = dv.desc;
+  document.getElementById('edit-preview-date').textContent = formatDateFR(dv.date);
+  document.getElementById('edit-change-indicator').classList.remove('visible');
+
+  document.getElementById('edit-modal-overlay').classList.add('open');
+}
+
+function updateEditPreview() {
+  const matiere = document.getElementById('ef-matiere').value.trim();
+  const desc = document.getElementById('ef-desc').value.trim();
+  const date = document.getElementById('ef-date').value;
+
+  document.getElementById('edit-preview-matiere').textContent = matiere || '—';
+  document.getElementById('edit-preview-desc').textContent = desc || '—';
+  document.getElementById('edit-preview-date').textContent = date ? formatDateFR(date) : '—';
+  document.getElementById('edit-preview').style.borderLeftColor = editSelectedColor || '#1a56db';
+
+  const changed = (
+    matiere !== editOriginal.matiere ||
+    desc !== editOriginal.desc ||
+    date !== editOriginal.date ||
+    editSelectedColor !== editOriginal.color
+  );
+  document.getElementById('edit-change-indicator').classList.toggle('visible', changed);
+}
+
+function confirmEditDevoir() {
+  const matiere = document.getElementById('ef-matiere').value.trim();
+  const desc = document.getElementById('ef-desc').value.trim();
+  const date = document.getElementById('ef-date').value;
+
+  if (!matiere || !desc || !date) {
+    document.getElementById('ef-matiere').style.borderColor = !matiere ? 'var(--red)' : '';
+    document.getElementById('ef-desc').style.borderColor = !desc ? 'var(--red)' : '';
+    document.getElementById('ef-date').style.borderColor = !date ? 'var(--red)' : '';
+    return;
+  }
+
+  const dv = devoirs.find(d => d.id === editingId);
+  if (!dv) return;
+
+  const changes = [];
+  if (matiere !== editOriginal.matiere) changes.push(`Matière : <b>${editOriginal.matiere}</b> → <b>${matiere}</b>`);
+  if (desc !== editOriginal.desc) changes.push(`Description modifiée`);
+  if (date !== editOriginal.date) changes.push(`Date : <b>${formatDateFR(editOriginal.date)}</b> → <b>${formatDateFR(date)}</b>`);
+  if (editSelectedColor !== editOriginal.color) changes.push(`Couleur modifiée`);
+
+  if (changes.length === 0) {
+    applyEdit();
+    return;
+  }
+
+  document.getElementById('edit-confirm-changes').innerHTML = changes.join('<br>');
+  document.getElementById('edit-confirm-bar').style.display = 'block';
+  document.getElementById('edit-save-btn').style.display = 'none';
+  document.querySelector('#edit-modal-overlay .btn-cancel').style.display = 'none';
+}
+
+function cancelConfirm() {
+  document.getElementById('edit-confirm-bar').style.display = 'none';
+  document.getElementById('edit-save-btn').style.display = '';
+  document.querySelector('#edit-modal-overlay .btn-cancel').style.display = '';
+}
+
+function applyEdit() {
+  const matiere = document.getElementById('ef-matiere').value.trim();
+  const desc = document.getElementById('ef-desc').value.trim();
+  const date = document.getElementById('ef-date').value;
+  const dv = devoirs.find(d => d.id === editingId);
+  if (!dv) return;
+
+  dv.matiere = matiere;
+  dv.desc = desc;
+  dv.date = date;
+  dv.color = editSelectedColor;
+  save();
+
+  const origin = editOrigin;
+  closeEditModal();
+  renderStrip();
+  renderDevoirs();
+  renderSemaine();
+  renderStats();
+  if (origin === 'todo') setTimeout(() => openTodoModal(), 200);
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal-overlay').classList.remove('open');
+  document.getElementById('edit-confirm-bar').style.display = 'none';
+  document.getElementById('edit-save-btn').style.display = '';
+  const cancelBtn = document.querySelector('#edit-modal-overlay .btn-cancel');
+  if (cancelBtn) cancelBtn.style.display = '';
+  editingId = null;
+  editOriginal = null;
+  editOrigin = null;
+}
+
+function closeEditModalOutside(e) {
+  if (e.target === document.getElementById('edit-modal-overlay')) closeEditModal();
 }
 
 // ── INIT ──
