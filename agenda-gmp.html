@@ -825,17 +825,35 @@
     <div class="ics-section">
       <div class="ics-card">
         <div class="ics-title">📅 Importer mon EDT Nantes Université</div>
-        <div class="ics-desc">Tu peux importer ton emploi du temps BUT GMP directement depuis Celcat (Nantes Université). Ton EDT se mettra à jour automatiquement.</div>
-        <div class="ics-steps">
-          1. Va sur <span>edt.univ-nantes.fr</span> (ta composante)<br>
-          2. Trouve ton groupe BUT GMP<br>
-          3. Copie l'URL du format <span>.ics</span><br>
-          4. Colle-la ici ↓
+
+        <!-- Méthode 1 : coller le contenu brut -->
+        <div class="ics-desc" style="margin-bottom:8px;">
+          <strong>Méthode la plus simple depuis iPhone :</strong>
         </div>
-        <div class="ics-input-row">
-          <input type="url" id="ics-url" placeholder="https://edt.univ-nantes.fr/…/groupe.ics">
-          <button class="ics-btn" onclick="loadICS()">Importer</button>
+        <div class="ics-steps" style="margin-bottom:12px;">
+          1. Ouvre <span>Safari</span> et va sur <span>edt.univ-nantes.fr</span><br>
+          2. Trouve ton groupe BUT GMP et copie l'URL <span>.ics</span><br>
+          3. Colle cette URL dans Safari → la page affiche du texte<br>
+          4. Fais <span>Sélectionner tout</span> puis <span>Copier</span><br>
+          5. Reviens ici et colle dans le champ ci-dessous ↓
         </div>
+        <textarea id="ics-paste" placeholder="Colle ici le contenu brut du fichier .ics (commence par BEGIN:VCALENDAR…)" style="width:100%;height:90px;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;resize:none;"></textarea>
+        <button class="ics-btn" onclick="loadICSPaste()" style="width:100%;margin-top:8px;">✅ Importer le texte collé</button>
+
+        <!-- Séparateur -->
+        <div style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span style="font-size:12px;color:var(--text-xsoft);font-weight:500;">OU</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+
+        <!-- Méthode 2 : fichier .ics -->
+        <div class="ics-desc" style="margin-bottom:8px;"><strong>Importer un fichier .ics :</strong></div>
+        <label class="ics-btn" style="display:block;text-align:center;cursor:pointer;">
+          📁 Choisir un fichier .ics
+          <input type="file" accept=".ics" style="display:none" onchange="loadICSFile(this.files[0])">
+        </label>
+
         <div class="ics-status" id="ics-status"></div>
         <div class="cours-import-list" id="cours-import-list"></div>
       </div>
@@ -1003,7 +1021,10 @@ function getWeekStart(offset = 0) {
 }
 
 function isoDate(d) {
-  return d.toISOString().split('T')[0];
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 function formatDateFR(iso) {
