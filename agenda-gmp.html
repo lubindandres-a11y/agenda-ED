@@ -7,25 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --blue: #1a56db;
-    --blue-light: #e8effe;
-    --blue-mid: #3b71f3;
-    --green: #0e9f6e;
-    --green-light: #def7ec;
-    --red: #e02424;
-    --red-light: #fde8e8;
-    --orange: #ff8a00;
-    --orange-light: #fff3e0;
-    --purple: #7e3af2;
-    --purple-light: #edebfe;
-    --text: #111827;
-    --text-soft: #6b7280;
-    --text-xsoft: #9ca3af;
-    --bg: #f3f4f6;
-    --card: #ffffff;
-    --border: #e5e7eb;
-    --nav-h: 64px;
-    --top-h: 56px;
+    --blue: #1a56db; --blue-light: #e8effe; --blue-mid: #3b71f3;
+    --green: #0e9f6e; --green-light: #def7ec;
+    --red: #e02424; --red-light: #fde8e8;
+    --orange: #ff8a00; --orange-light: #fff3e0;
+    --yellow: #f59e0b; --yellow-light: #fef3c7;
+    --purple: #7e3af2; --purple-light: #edebfe;
+    --text: #111827; --text-soft: #6b7280; --text-xsoft: #9ca3af;
+    --bg: #f3f4f6; --card: #ffffff; --border: #e5e7eb;
+    --nav-h: 64px; --top-h: 56px;
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -34,221 +24,111 @@
   html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
   body { display: flex; flex-direction: column; overflow: hidden; }
 
-  /* TOP BAR */
   .topbar {
-    height: var(--top-h);
-    background: var(--blue);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    padding-top: env(safe-area-inset-top, 0px);
-    flex-shrink: 0;
+    height: var(--top-h); background: var(--blue);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; padding-top: env(safe-area-inset-top, 0px); flex-shrink: 0;
   }
   .topbar-title { color: #fff; font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
-  .topbar-sub { color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 400; margin-top: 1px; }
+  .topbar-sub { color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 1px; }
   .topbar-left { display: flex; flex-direction: column; }
   .topbar-btn {
-    background: rgba(255,255,255,0.15);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 6px 10px;
-    cursor: pointer;
-    font-family: inherit;
+    background: rgba(255,255,255,0.15); border: none; border-radius: 8px;
+    color: #fff; font-size: 13px; font-weight: 500; padding: 6px 10px;
+    cursor: pointer; font-family: inherit;
   }
 
-  /* MAIN SCROLL AREA */
-  .main {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
-  }
-
-  /* SECTION VISIBILITY */
+  .main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px)); }
   .section { display: none; }
   .section.active { display: block; }
 
-  /* ───── DEVOIRS ───── */
+  /* ── WEEK STRIP ── */
   .week-strip {
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 16px 8px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 12px 16px 8px; position: sticky; top: 0; z-index: 10;
   }
-  .week-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  .week-label { font-size: 14px; font-weight: 600; color: var(--text); }
+  .week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .week-label { font-size: 14px; font-weight: 600; }
   .week-arrow {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    width: 28px;
-    height: 28px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: var(--text-soft);
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    width: 28px; height: 28px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; font-size: 14px; color: var(--text-soft);
   }
-  .days-row {
-    display: flex;
-    gap: 6px;
-  }
+  .days-row { display: flex; gap: 6px; }
   .day-pill {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6px 4px;
-    border-radius: 10px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: background 0.15s;
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 6px 4px; border-radius: 10px; cursor: pointer;
+    border: 2px solid transparent; transition: background 0.15s;
   }
   .day-pill.active { background: var(--blue); }
-  .day-pill.today:not(.active) { border-color: var(--blue); }
+  /* today : toujours un anneau jaune, actif ou pas */
+  .day-pill.today { border-color: var(--yellow); }
+  .day-pill.today.active { background: var(--blue); border-color: var(--yellow); }
   .day-pill-name { font-size: 10px; font-weight: 500; color: var(--text-xsoft); text-transform: uppercase; letter-spacing: 0.5px; }
-  .day-pill.active .day-pill-name { color: rgba(255,255,255,0.7); }
+  .day-pill.active .day-pill-name { color: rgba(255,255,255,0.75); }
+  .day-pill.today:not(.active) .day-pill-name { color: var(--yellow); font-weight: 600; }
   .day-pill-num { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.2; }
   .day-pill.active .day-pill-num { color: #fff; }
+  .day-pill.today:not(.active) .day-pill-num { color: var(--yellow); }
   .day-pill-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); margin-top: 3px; }
   .day-pill.active .day-pill-dot { background: rgba(255,255,255,0.6); }
+  .day-pill.today:not(.active) .day-pill-dot { background: var(--yellow); }
   .day-pill-dot.hidden { opacity: 0; }
 
   .devoirs-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-
   .devoir-card {
-    background: var(--card);
-    border-radius: 14px;
-    padding: 14px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
+    background: var(--card); border-radius: 14px; padding: 14px;
+    display: flex; gap: 12px; align-items: flex-start;
     border-left: 4px solid var(--blue);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06); position: relative;
   }
   .devoir-card.done { opacity: 0.55; }
   .devoir-card.done .devoir-titre { text-decoration: line-through; }
   .devoir-check {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    flex-shrink: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, border-color 0.15s;
-    margin-top: 1px;
+    width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
+    flex-shrink: 0; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: background 0.15s, border-color 0.15s; margin-top: 1px;
   }
   .devoir-check.checked { background: var(--green); border-color: var(--green); }
   .devoir-check.checked::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 700; }
   .devoir-body { flex: 1; min-width: 0; }
-  .devoir-matiere { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--blue); margin-bottom: 3px; }
-  .devoir-titre { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .devoir-matiere { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+  .devoir-titre { font-size: 14px; font-weight: 500; line-height: 1.4; }
   .devoir-meta { font-size: 12px; color: var(--text-xsoft); margin-top: 4px; }
-  .devoir-delete {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-xsoft);
-    font-size: 16px;
-    padding: 2px;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-
-  .empty-day {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-xsoft);
-    font-size: 14px;
-  }
+  .devoir-delete { background: none; border: none; cursor: pointer; color: var(--text-xsoft); font-size: 16px; padding: 2px; line-height: 1; flex-shrink: 0; }
+  .empty-day { text-align: center; padding: 40px 20px; color: var(--text-xsoft); font-size: 14px; }
   .empty-day .emoji { font-size: 36px; display: block; margin-bottom: 10px; }
 
-  /* SEMAINE RESUME */
+  /* ── SEMAINE ── */
   .resume-section { padding: 12px 16px; }
   .resume-title { font-size: 13px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  .resume-row {
-    background: var(--card);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .resume-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 14px;
-    gap: 12px;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-  }
+  .resume-row { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .resume-item { display: flex; align-items: center; padding: 12px 14px; gap: 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
   .resume-item:last-child { border-bottom: none; }
   .resume-item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .resume-item-day { font-size: 12px; font-weight: 600; color: var(--text-soft); width: 28px; flex-shrink: 0; }
   .resume-item-text { font-size: 13px; color: var(--text); flex: 1; }
-  .resume-item-badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 20px;
-  }
 
-  /* FAB */
+  /* ── FAB ── */
   .fab {
-    position: fixed;
-    bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom, 0px));
-    right: 16px;
-    width: 52px;
-    height: 52px;
-    background: var(--blue);
-    border-radius: 50%;
-    border: none;
-    color: #fff;
-    font-size: 26px;
-    line-height: 1;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(26,86,219,0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
+    position: fixed; bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom, 0px));
+    right: 16px; width: 52px; height: 52px; background: var(--blue); border-radius: 50%;
+    border: none; color: #fff; font-size: 26px; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(26,86,219,0.4); display: flex; align-items: center; justify-content: center; z-index: 50;
   }
   .fab.hidden { display: none; }
 
-  /* ───── MODAL AJOUT ───── */
+  /* ── MODAL ── */
   .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 100;
-    display: flex;
-    align-items: flex-end;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100;
+    display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s;
   }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal {
-    background: var(--card);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
+    background: var(--card); border-radius: 20px 20px 0 0; width: 100%;
     padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));
-    transform: translateY(100%);
-    transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    max-height: 92vh; overflow-y: auto;
   }
   .modal-overlay.open .modal { transform: translateY(0); }
   .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
@@ -256,415 +136,211 @@
   .field { margin-bottom: 12px; }
   .field label { font-size: 12px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px; }
   .field input, .field select, .field textarea {
-    width: 100%;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 15px;
-    font-family: inherit;
-    color: var(--text);
-    background: var(--bg);
-    outline: none;
-    transition: border-color 0.15s;
+    width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; font-size: 15px; font-family: inherit;
+    color: var(--text); background: var(--bg); outline: none; transition: border-color 0.15s;
   }
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--blue); background: #fff; }
   .field textarea { resize: none; height: 80px; }
   .colors-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .color-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    cursor: pointer;
-    transition: border-color 0.1s;
-  }
+  .color-btn { width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: border-color 0.1s; }
   .color-btn.selected { border-color: var(--text); }
   .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
   .btn-cancel {
-    flex: 1;
-    padding: 13px;
-    border-radius: 12px;
-    border: 1.5px solid var(--border);
-    background: var(--bg);
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-soft);
-    cursor: pointer;
-    font-family: inherit;
+    flex: 1; padding: 13px; border-radius: 12px; border: 1.5px solid var(--border);
+    background: var(--bg); font-size: 15px; font-weight: 600; color: var(--text-soft);
+    cursor: pointer; font-family: inherit;
   }
   .btn-save {
-    flex: 2;
-    padding: 13px;
-    border-radius: 12px;
-    border: none;
-    background: var(--blue);
-    font-size: 15px;
-    font-weight: 700;
-    color: #fff;
-    cursor: pointer;
-    font-family: inherit;
+    flex: 2; padding: 13px; border-radius: 12px; border: none; background: var(--blue);
+    font-size: 15px; font-weight: 700; color: #fff; cursor: pointer; font-family: inherit;
   }
 
-  /* ───── ICS MODAL ───── */
-  .ics-info {
-    background: var(--blue-light);
-    border-radius: 10px;
-    padding: 12px;
-    font-size: 13px;
-    color: var(--blue);
-    line-height: 1.5;
-    margin-bottom: 12px;
+  /* ── PROCHAINS COURS DROPDOWN ── */
+  .next-cours-label { font-size: 12px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+  .cours-dropdown {
+    width: 100%; border: 1.5px solid var(--blue); border-radius: 10px;
+    background: var(--card); overflow: hidden; margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(26,86,219,0.1);
   }
+  .cours-dropdown-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    cursor: pointer; border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  .cours-dropdown-item:last-child { border-bottom: none; }
+  .cours-dropdown-item:active { background: var(--blue-light); }
+  .cours-dropdown-item.selected { background: var(--blue-light); }
+  .cours-dropdown-icon { font-size: 16px; flex-shrink: 0; }
+  .cours-dropdown-body { flex: 1; min-width: 0; }
+  .cours-dropdown-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cours-dropdown-meta { font-size: 11px; color: var(--text-soft); margin-top: 1px; }
+  .cours-dropdown-date { font-size: 12px; font-weight: 700; color: var(--blue); flex-shrink: 0; text-align: right; }
+  .no-cours-hint { font-size: 12px; color: var(--text-xsoft); font-style: italic; padding: 4px 0; }
 
-  /* ───── BOTTOM NAV ───── */
+  /* ── BOTTOM NAV ── */
   .bottom-nav {
     height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    background: var(--card);
-    border-top: 1px solid var(--border);
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 40;
+    background: var(--card); border-top: 1px solid var(--border);
+    display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
   }
   .nav-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    cursor: pointer;
-    border: none;
-    background: none;
-    padding: 0;
-    font-family: inherit;
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 3px; cursor: pointer; border: none;
+    background: none; padding: 0; font-family: inherit;
   }
   .nav-icon { font-size: 22px; line-height: 1; }
   .nav-label { font-size: 10px; font-weight: 500; color: var(--text-xsoft); }
   .nav-item.active .nav-label { color: var(--blue); font-weight: 600; }
-  .nav-item.active .nav-icon { filter: none; }
 
-  /* ───── STATS ───── */
+  /* ── STATS ── */
   .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 16px; }
-  .stat-card {
-    background: var(--card);
-    border-radius: 14px;
-    padding: 16px;
-    border: 1px solid var(--border);
-  }
-  .stat-num { font-size: 28px; font-weight: 700; color: var(--text); }
+  .stat-card { background: var(--card); border-radius: 14px; padding: 16px; border: 1px solid var(--border); }
+  .stat-num { font-size: 28px; font-weight: 700; }
   .stat-label { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
   .stat-sub { font-size: 11px; color: var(--text-xsoft); margin-top: 6px; }
-
   .matiere-list { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
   .matiere-row {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid var(--border);
+    background: var(--card); border-radius: 12px; padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px; border: 1px solid var(--border);
+    cursor: pointer; transition: transform 0.12s;
   }
+  .matiere-row:active { transform: scale(0.99); }
   .matiere-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .matiere-name { font-size: 14px; font-weight: 500; flex: 1; }
   .matiere-count { font-size: 13px; color: var(--text-soft); }
-  .matiere-row { cursor: pointer; transition: transform 0.12s, border-color 0.12s; }
-  .matiere-row:active { transform: scale(0.99); }
-  .matiere-row:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
   .matiere-chevron { font-size: 22px; color: var(--text-xsoft); line-height: 1; }
 
-  /* MODALE MATIÈRE */
+  /* ── EDT ── */
+  .edt-section { padding: 14px 16px 24px; }
+  .edt-header { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .edt-sub { font-size: 13px; color: var(--text-soft); margin-bottom: 16px; }
+
+  .edt-imported-banner {
+    background: var(--green-light); border: 1px solid var(--green);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .edt-imported-banner .edt-b-icon { font-size: 22px; }
+  .edt-imported-banner .edt-b-text { flex: 1; font-size: 13px; color: var(--green); font-weight: 600; }
+  .edt-imported-banner .edt-b-sub { font-size: 11px; font-weight: 400; margin-top: 1px; }
+  .edt-imported-banner .edt-b-clear { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--green); padding: 4px; }
+
+  .edt-method {
+    background: var(--card); border-radius: 14px; border: 1px solid var(--border);
+    padding: 16px; margin-bottom: 12px;
+  }
+  .edt-method-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .edt-method-num {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--blue);
+    color: #fff; font-size: 13px; font-weight: 700; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .edt-method-title { font-size: 15px; font-weight: 700; }
+  .edt-method-badge {
+    margin-left: auto; font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 20px; background: var(--green-light); color: var(--green);
+  }
+  .edt-steps { font-size: 13px; color: var(--text-soft); line-height: 1.9; }
+  .edt-steps b { color: var(--blue); }
+  .edt-steps code {
+    background: var(--bg); border-radius: 4px; padding: 1px 5px;
+    font-family: monospace; font-size: 12px; color: var(--text);
+  }
+
+  .edt-textarea {
+    width: 100%; min-height: 80px; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; font-size: 13px;
+    font-family: inherit; color: var(--text); background: var(--bg);
+    outline: none; resize: none; margin-top: 10px;
+  }
+  .edt-textarea:focus { border-color: var(--blue); background: #fff; }
+  .edt-btn {
+    width: 100%; margin-top: 10px; background: var(--blue); color: #fff;
+    border: none; border-radius: 10px; padding: 12px; font-size: 14px;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .edt-btn-file {
+    width: 100%; display: block; text-align: center; margin-top: 10px;
+    background: var(--bg); color: var(--blue); border: 1.5px solid var(--blue);
+    border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .edt-divider { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+  .edt-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .edt-divider-text { font-size: 12px; color: var(--text-xsoft); font-weight: 500; }
+  .edt-status { margin-top: 10px; font-size: 13px; padding: 10px 12px; border-radius: 8px; display: none; }
+  .edt-status.ok { background: var(--green-light); color: var(--green); display: block; }
+  .edt-status.err { background: var(--red-light); color: var(--red); display: block; }
+
+  .edt-preview { margin-top: 12px; }
+  .edt-preview-title { font-size: 12px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .cours-item {
+    background: var(--blue-light); border-radius: 8px; padding: 9px 12px;
+    font-size: 12px; color: var(--blue); display: flex;
+    justify-content: space-between; align-items: center; margin-bottom: 5px;
+  }
+  .cours-item-name { font-weight: 600; }
+  .cours-item-date { font-weight: 400; opacity: 0.75; }
+
+  /* ── MATIERE MODAL ── */
   .matiere-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 210;
-    display: flex;
-    align-items: flex-end;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 210;
+    display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s;
   }
   .matiere-modal-overlay.open { opacity: 1; pointer-events: all; }
   .matiere-modal {
-    background: var(--card);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    transform: translateY(100%);
-    transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    background: var(--card); border-radius: 20px 20px 0 0; width: 100%;
+    max-height: 85vh; display: flex; flex-direction: column;
+    transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
   }
   .matiere-modal-overlay.open .matiere-modal { transform: translateY(0); }
-  .matiere-modal-head {
-    padding: 16px 16px 12px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .matiere-modal-handle {
-    width: 36px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 0 auto 14px;
-  }
+  .matiere-modal-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .matiere-modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 14px; }
   .matiere-modal-title { font-size: 17px; font-weight: 700; }
   .matiere-modal-sub { font-size: 13px; color: var(--text-soft); margin-top: 3px; }
-  .matiere-modal-body {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 10px 16px calc(18px + env(safe-area-inset-bottom, 0px));
-  }
-  .matiere-task {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .matiere-modal-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
+  .matiere-task { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
   .matiere-task:last-child { border-bottom: none; }
   .matiere-task-check {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    flex-shrink: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1px;
+    width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
+    flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 1px;
   }
-  .matiere-task-check.checked {
-    background: var(--green);
-    border-color: var(--green);
-  }
-  .matiere-task-check.checked::after {
-    content: '✓';
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-  }
+  .matiere-task-check.checked { background: var(--green); border-color: var(--green); }
+  .matiere-task-check.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
   .matiere-task-body { flex: 1; min-width: 0; }
   .matiere-task-desc { font-size: 14px; font-weight: 500; line-height: 1.4; }
-  .matiere-task-desc.done {
-    text-decoration: line-through;
-    opacity: 0.5;
-  }
+  .matiere-task-desc.done { text-decoration: line-through; opacity: 0.5; }
   .matiere-task-date { font-size: 12px; color: var(--text-xsoft); margin-top: 3px; }
   .matiere-task-date.late { color: var(--red); font-weight: 600; }
-  .matiere-task-delete {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-xsoft);
-    font-size: 16px;
-    padding: 2px;
-  }
-  .matiere-task-section {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-soft);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    padding: 10px 0 4px;
-  }
-  .matiere-task-empty {
-    text-align: center;
-    padding: 30px 0;
-    color: var(--text-xsoft);
-    font-size: 14px;
-  }
+  .matiere-task-delete { background: none; border: none; cursor: pointer; color: var(--text-xsoft); font-size: 16px; padding: 2px; }
+  .matiere-task-section { font-size: 11px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px; padding: 10px 0 4px; }
+  .matiere-task-empty { text-align: center; padding: 30px 0; color: var(--text-xsoft); font-size: 14px; }
 
-  /* ICS section */
-  .ics-section { padding: 14px 16px; }
-  .ics-card {
-    background: var(--card);
-    border-radius: 14px;
-    padding: 16px;
-    border: 1px solid var(--border);
-  }
-  .ics-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-  .ics-desc { font-size: 13px; color: var(--text-soft); margin-bottom: 12px; line-height: 1.5; }
-  .ics-steps { font-size: 13px; color: var(--text-soft); line-height: 1.8; padding-left: 4px; }
-  .ics-steps span { color: var(--blue); font-weight: 600; }
-  .ics-input-row { display: flex; gap: 8px; margin-top: 12px; }
-  .ics-input-row input {
-    flex: 1;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 13px;
-    font-family: inherit;
-    outline: none;
-    color: var(--text);
-  }
-  .ics-input-row input:focus { border-color: var(--blue); }
-  .ics-btn {
-    background: var(--blue);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    white-space: nowrap;
-  }
-  .ics-status { margin-top: 10px; font-size: 13px; padding: 10px 12px; border-radius: 8px; display: none; }
-  .ics-status.ok { background: var(--green-light); color: var(--green); display: block; }
-  .ics-status.err { background: var(--red-light); color: var(--red); display: block; }
-  .cours-import-list { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
-  .cours-import-item {
-    background: var(--blue-light);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12px;
-    color: var(--blue);
-    display: flex;
-    justify-content: space-between;
-  }
-
-  /* MODALE TODO */
+  /* ── TODO MODAL ── */
   .todo-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 200;
-    display: flex;
-    align-items: flex-end;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200;
+    display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s;
   }
   .todo-modal-overlay.open { opacity: 1; pointer-events: all; }
   .todo-modal {
-    background: var(--card);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    transform: translateY(100%);
-    transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    background: var(--card); border-radius: 20px 20px 0 0; width: 100%;
+    max-height: 80vh; display: flex; flex-direction: column;
+    transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
   }
   .todo-modal-overlay.open .todo-modal { transform: translateY(0); }
-  .todo-modal-head {
-    padding: 16px 16px 12px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
+  .todo-modal-head { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .todo-modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 14px; }
   .todo-modal-title { font-size: 17px; font-weight: 700; }
   .todo-modal-sub { font-size: 13px; color: var(--text-soft); margin-top: 2px; }
-  .todo-modal-body {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
-    flex: 1;
-  }
-  .todo-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .todo-modal-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)); flex: 1; }
+  .todo-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
   .todo-item:last-child { border-bottom: none; }
-  .todo-edit {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-xsoft);
-    font-size: 15px;
-    padding: 4px;
-    line-height: 1;
-    flex-shrink: 0;
-    align-self: center;
-    transition: color 0.15s;
-  }
-  .todo-edit:hover { color: var(--blue); }
-  .todo-delete {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-xsoft);
-    font-size: 15px;
-    padding: 4px;
-    line-height: 1;
-    flex-shrink: 0;
-    align-self: center;
-    transition: color 0.15s;
-  }
-  .todo-delete:hover { color: var(--red); }
-
-  /* ── Bandeau suppression ── */
-  .delete-confirm-bar {
-    position: fixed;
-    bottom: calc(var(--nav-h) + 12px + env(safe-area-inset-bottom, 0px));
-    left: 16px;
-    right: 16px;
-    background: #1f2937;
-    color: #fff;
-    border-radius: 14px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 500;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    transform: translateY(20px);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.2s, opacity 0.2s;
-  }
-  .delete-confirm-bar.show {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: all;
-  }
-  .delete-confirm-text { flex: 1; font-size: 14px; font-weight: 500; }
-  .delete-confirm-text span { color: #9ca3af; font-size: 12px; display: block; margin-top: 1px; }
-  .delete-confirm-no {
-    background: #374151;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 14px;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .delete-confirm-yes {
-    background: var(--red);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 14px;
-    cursor: pointer;
-    font-family: inherit;
-  }
   .todo-check {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    flex-shrink: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, border-color 0.15s;
-    margin-top: 1px;
+    width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border);
+    flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.15s; margin-top: 1px;
   }
   .todo-check.checked { background: var(--green); border-color: var(--green); }
   .todo-check.checked::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 700; }
@@ -675,108 +351,53 @@
   .todo-date { font-size: 12px; color: var(--text-xsoft); margin-top: 3px; }
   .todo-date.late { color: var(--red); font-weight: 600; }
   .todo-empty { text-align: center; padding: 30px 0; color: var(--text-xsoft); font-size: 14px; }
+  .todo-edit, .todo-delete, .devoir-edit, .matiere-task-edit {
+    background: none; border: none; cursor: pointer; color: var(--text-xsoft);
+    font-size: 15px; padding: 4px; line-height: 1; flex-shrink: 0;
+    align-self: center; transition: color 0.15s;
+  }
+  .todo-edit:hover, .devoir-edit:hover, .matiere-task-edit:hover { color: var(--blue); }
+  .todo-delete:hover { color: var(--red); }
 
-  /* ───── MODALE ÉDITION ───── */
+  /* ── EDIT MODAL ── */
   .edit-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 300;
-    display: flex;
-    align-items: flex-end;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300;
+    display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s;
   }
   .edit-modal-overlay.open { opacity: 1; pointer-events: all; }
   .edit-modal {
-    background: var(--card);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
+    background: var(--card); border-radius: 20px 20px 0 0; width: 100%;
     padding: 20px 16px calc(24px + env(safe-area-inset-bottom, 0px));
-    transform: translateY(100%);
-    transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
-    max-height: 92vh;
-    overflow-y: auto;
+    transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32,0.72,0,1);
+    max-height: 92vh; overflow-y: auto;
   }
   .edit-modal-overlay.open .edit-modal { transform: translateY(0); }
   .edit-modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
   .edit-modal-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
   .edit-modal-subtitle { font-size: 13px; color: var(--text-soft); margin-bottom: 18px; }
   .edit-preview {
-    background: var(--bg);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 18px;
-    border-left: 4px solid var(--blue);
-    font-size: 13px;
-    color: var(--text-soft);
-    line-height: 1.6;
+    background: var(--bg); border-radius: 12px; padding: 12px 14px; margin-bottom: 18px;
+    border-left: 4px solid var(--blue); font-size: 13px; color: var(--text-soft); line-height: 1.6;
   }
   .edit-preview strong { color: var(--text); font-weight: 600; }
-  .edit-change-indicator {
-    font-size: 12px;
-    color: var(--orange);
-    font-weight: 600;
-    margin-top: 6px;
-    display: none;
-  }
+  .edit-change-indicator { font-size: 12px; color: var(--orange); font-weight: 600; margin-top: 6px; display: none; }
   .edit-change-indicator.visible { display: block; }
 
-  /* bouton crayon sur les cartes */
-  .devoir-edit, .matiere-task-edit {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-xsoft);
-    font-size: 15px;
-    padding: 4px;
-    line-height: 1;
-    flex-shrink: 0;
-    transition: color 0.15s;
-  }
-  .devoir-edit:hover, .matiere-task-edit:hover { color: var(--blue); }
-
-  /* Confirmation suppression inline sur la carte */
+  /* ── CONFIRM SUPPRESSION ── */
   .devoir-confirm-delete {
-    position: absolute;
-    inset: 0;
-    background: rgba(255,255,255,0.97);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 14px;
-    gap: 10px;
-    z-index: 5;
+    position: absolute; inset: 0; background: rgba(255,255,255,0.97);
+    border-radius: 14px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px; gap: 10px; z-index: 5;
   }
-  .devoir-confirm-delete span {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--red);
-    flex: 1;
-  }
+  .devoir-confirm-delete span { font-size: 13px; font-weight: 600; color: var(--red); flex: 1; }
   .devoir-confirm-delete .btn-no {
-    padding: 7px 14px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border);
-    background: var(--bg);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-soft);
-    cursor: pointer;
-    font-family: inherit;
+    padding: 7px 14px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--bg); font-size: 13px; font-weight: 600; color: var(--text-soft);
+    cursor: pointer; font-family: inherit;
   }
   .devoir-confirm-delete .btn-yes {
-    padding: 7px 14px;
-    border-radius: 8px;
-    border: none;
-    background: var(--red);
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    cursor: pointer;
-    font-family: inherit;
+    padding: 7px 14px; border-radius: 8px; border: none; background: var(--red);
+    font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; font-family: inherit;
   }
 </style>
 </head>
@@ -792,7 +413,7 @@
 
 <div class="main" id="main">
 
-  <!-- ── SECTION DEVOIRS ── -->
+  <!-- DEVOIRS -->
   <div class="section active" id="sec-devoirs">
     <div class="week-strip">
       <div class="week-nav">
@@ -805,7 +426,7 @@
     <div class="devoirs-list" id="devoirs-list"></div>
   </div>
 
-  <!-- ── SECTION SEMAINE ── -->
+  <!-- SEMAINE -->
   <div class="section" id="sec-semaine">
     <div class="resume-section">
       <div class="resume-title">Cette semaine</div>
@@ -817,52 +438,70 @@
     </div>
   </div>
 
-  <!-- ── SECTION STATS ── -->
+  <!-- STATS / REGLAGES -->
   <div class="section" id="sec-stats">
     <div class="stats-grid" id="stats-grid"></div>
     <div class="resume-title" style="padding: 0 16px 8px; font-size:13px; color:var(--text-soft); text-transform:uppercase; letter-spacing:.5px; font-weight:600;">Par matière</div>
     <div class="matiere-list" id="matiere-list"></div>
-    <div class="ics-section">
-      <div class="ics-card">
-        <div class="ics-title">📅 Importer mon EDT Nantes Université</div>
 
-        <!-- Méthode 1 : coller le contenu brut -->
-        <div class="ics-desc" style="margin-bottom:8px;">
-          <strong>Méthode la plus simple depuis iPhone :</strong>
-        </div>
-        <div class="ics-steps" style="margin-bottom:12px;">
-          1. Ouvre <span>Safari</span> et va sur <span>edt.univ-nantes.fr</span><br>
-          2. Trouve ton groupe BUT GMP et copie l'URL <span>.ics</span><br>
-          3. Colle cette URL dans Safari → la page affiche du texte<br>
-          4. Fais <span>Sélectionner tout</span> puis <span>Copier</span><br>
-          5. Reviens ici et colle dans le champ ci-dessous ↓
-        </div>
-        <textarea id="ics-paste" placeholder="Colle ici le contenu brut du fichier .ics (commence par BEGIN:VCALENDAR…)" style="width:100%;height:90px;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;resize:none;"></textarea>
-        <button class="ics-btn" onclick="loadICSPaste()" style="width:100%;margin-top:8px;">✅ Importer le texte collé</button>
+    <!-- EDT -->
+    <div class="edt-section">
+      <div class="edt-header">📅 Mon EDT Nantes Université</div>
+      <div class="edt-sub">Importe ton emploi du temps pour voir les prochains cours lors de l'ajout d'un devoir.</div>
 
-        <!-- Séparateur -->
-        <div style="display:flex;align-items:center;gap:10px;margin:14px 0;">
-          <div style="flex:1;height:1px;background:var(--border);"></div>
-          <span style="font-size:12px;color:var(--text-xsoft);font-weight:500;">OU</span>
-          <div style="flex:1;height:1px;background:var(--border);"></div>
+      <div id="edt-imported-banner" style="display:none" class="edt-imported-banner">
+        <span class="edt-b-icon">✅</span>
+        <div class="edt-b-text">
+          EDT importé
+          <div class="edt-b-sub" id="edt-imported-sub"></div>
         </div>
+        <button class="edt-b-clear" onclick="clearEDT()" title="Supprimer l'EDT">✕</button>
+      </div>
 
-        <!-- Méthode 2 : fichier .ics -->
-        <div class="ics-desc" style="margin-bottom:8px;"><strong>Importer un fichier .ics :</strong></div>
-        <label class="ics-btn" style="display:block;text-align:center;cursor:pointer;">
+      <!-- Méthode 1 : coller -->
+      <div class="edt-method">
+        <div class="edt-method-header">
+          <div class="edt-method-num">1</div>
+          <div class="edt-method-title">Coller le contenu ICS</div>
+          <span class="edt-method-badge">📱 Recommandé</span>
+        </div>
+        <div class="edt-steps">
+          1. Ouvre <b>Safari</b> → va sur <b>edt.univ-nantes.fr</b><br>
+          2. Trouve ton groupe <b>BUT GMP</b><br>
+          3. Copie l'URL <code>.ics</code> et colle-la dans Safari<br>
+          4. La page affiche du texte → <b>Sélectionner tout</b> → <b>Copier</b><br>
+          5. Colle ci-dessous ↓
+        </div>
+        <textarea class="edt-textarea" id="ics-paste" placeholder="Colle le contenu ICS ici (commence par BEGIN:VCALENDAR…)"></textarea>
+        <button class="edt-btn" onclick="loadICSPaste()">✅ Importer le texte collé</button>
+      </div>
+
+      <div class="edt-divider"><div class="edt-divider-line"></div><span class="edt-divider-text">OU</span><div class="edt-divider-line"></div></div>
+
+      <!-- Méthode 2 : fichier -->
+      <div class="edt-method">
+        <div class="edt-method-header">
+          <div class="edt-method-num">2</div>
+          <div class="edt-method-title">Importer un fichier .ics</div>
+        </div>
+        <div class="edt-steps">Si tu as pu télécharger le fichier <code>.ics</code> directement, importe-le ici.</div>
+        <label class="edt-btn-file">
           📁 Choisir un fichier .ics
           <input type="file" accept=".ics" style="display:none" onchange="loadICSFile(this.files[0])">
         </label>
+      </div>
 
-        <div class="ics-status" id="ics-status"></div>
-        <div class="cours-import-list" id="cours-import-list"></div>
+      <div class="edt-status" id="ics-status"></div>
+      <div class="edt-preview" id="edt-preview" style="display:none">
+        <div class="edt-preview-title" id="edt-preview-title"></div>
+        <div id="cours-import-list"></div>
       </div>
     </div>
   </div>
 
 </div>
 
-<!-- MODALE MATIÈRE -->
+<!-- MATIERE MODAL -->
 <div class="matiere-modal-overlay" id="matiere-modal-overlay" onclick="closeMatiereModalOutside(event)">
   <div class="matiere-modal">
     <div class="matiere-modal-head">
@@ -874,7 +513,7 @@
   </div>
 </div>
 
-<!-- MODALE TODO -->
+<!-- TODO MODAL -->
 <div class="todo-modal-overlay" id="todo-modal-overlay" onclick="closeTodoModalOutside(event)">
   <div class="todo-modal">
     <div class="todo-modal-head">
@@ -893,12 +532,20 @@
 <div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Nouveau devoir</div>
+    <div class="modal-title">✏️ Nouveau devoir</div>
+
     <div class="field">
       <label>Matière</label>
-      <input type="text" id="f-matiere" placeholder="ex. Mécanique, CAO, Maths…" list="matieres-list">
+      <input type="text" id="f-matiere" placeholder="ex. Mécanique, CAO, Maths…" list="matieres-list" oninput="onMatiereInput()">
       <datalist id="matieres-list"></datalist>
     </div>
+
+    <!-- Prochains cours pour la matière sélectionnée -->
+    <div id="next-cours-block" style="display:none; margin-bottom:12px;">
+      <span class="next-cours-label">⚡ Prochains créneaux — appuie pour choisir la date</span>
+      <div class="cours-dropdown" id="next-cours-dropdown"></div>
+    </div>
+
     <div class="field">
       <label>Description</label>
       <textarea id="f-desc" placeholder="Quoi faire ?"></textarea>
@@ -918,7 +565,7 @@
   </div>
 </div>
 
-<!-- MODALE ÉDITION DEVOIR -->
+<!-- EDIT MODAL -->
 <div class="edit-modal-overlay" id="edit-modal-overlay" onclick="closeEditModalOutside(event)">
   <div class="edit-modal">
     <div class="edit-modal-handle"></div>
@@ -928,16 +575,16 @@
       <strong id="edit-preview-matiere"></strong><br>
       <span id="edit-preview-desc"></span><br>
       Pour le <span id="edit-preview-date"></span>
-      <div class="edit-change-indicator" id="edit-change-indicator">⚠️ Tu as modifié ce devoir — vérifie avant d'enregistrer.</div>
+      <div class="edit-change-indicator" id="edit-change-indicator">⚠️ Tu as modifié ce devoir.</div>
     </div>
     <div class="field">
       <label>Matière</label>
-      <input type="text" id="ef-matiere" placeholder="ex. Mécanique, CAO…" list="edit-matieres-list" oninput="updateEditPreview()">
+      <input type="text" id="ef-matiere" list="edit-matieres-list" oninput="updateEditPreview()">
       <datalist id="edit-matieres-list"></datalist>
     </div>
     <div class="field">
       <label>Description</label>
-      <textarea id="ef-desc" placeholder="Quoi faire ?" oninput="updateEditPreview()"></textarea>
+      <textarea id="ef-desc" oninput="updateEditPreview()"></textarea>
     </div>
     <div class="field">
       <label>Pour le</label>
@@ -962,57 +609,38 @@
   </div>
 </div>
 
-<!-- BANDEAU SUPPRESSION -->
-<div class="delete-confirm-bar" id="delete-confirm-bar">
-  <div class="delete-confirm-text">
-    Supprimer ce devoir ?
-    <span id="delete-confirm-label"></span>
-  </div>
-  <button class="delete-confirm-no" onclick="cancelDelete()">Non</button>
-  <button class="delete-confirm-yes" onclick="applyDelete()">Supprimer</button>
-</div>
-
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-item active" id="nav-devoirs" onclick="showSection('devoirs')">
-    <span class="nav-icon">📋</span>
-    <span class="nav-label">Devoirs</span>
+    <span class="nav-icon">📋</span><span class="nav-label">Devoirs</span>
   </button>
   <button class="nav-item" id="nav-semaine" onclick="showSection('semaine')">
-    <span class="nav-icon">📆</span>
-    <span class="nav-label">Semaine</span>
+    <span class="nav-icon">📆</span><span class="nav-label">Semaine</span>
   </button>
   <button class="nav-item" id="nav-stats" onclick="showSection('stats')">
-    <span class="nav-icon">⚙️</span>
-    <span class="nav-label">Réglages</span>
+    <span class="nav-icon">⚙️</span><span class="nav-label">Réglages</span>
   </button>
 </nav>
 
 <script>
-// ── STATE ──
 const COLORS = [
-  { name: 'Bleu',    val: '#1a56db' },
-  { name: 'Vert',    val: '#0e9f6e' },
-  { name: 'Rouge',   val: '#e02424' },
-  { name: 'Orange',  val: '#ff8a00' },
-  { name: 'Violet',  val: '#7e3af2' },
-  { name: 'Rose',    val: '#e74694' },
+  { name:'Bleu',   val:'#1a56db' }, { name:'Vert',   val:'#0e9f6e' },
+  { name:'Rouge',  val:'#e02424' }, { name:'Orange',  val:'#ff8a00' },
+  { name:'Violet', val:'#7e3af2' }, { name:'Rose',    val:'#e74694' },
 ];
 
-let devoirs = JSON.parse(localStorage.getItem('devoirs') || '[]');
+let devoirs      = JSON.parse(localStorage.getItem('devoirs') || '[]');
+let coursImportes = JSON.parse(localStorage.getItem('ics-events') || '[]');
 let selectedColor = COLORS[0].val;
 let currentWeekOffset = 0;
-let selectedDayIndex = new Date().getDay() === 0 ? 0 : new Date().getDay() - 1; // lun=0
-if (selectedDayIndex < 0 || selectedDayIndex > 4) selectedDayIndex = 0;
+let selectedDayIndex  = 0;
 
-function save() {
-  localStorage.setItem('devoirs', JSON.stringify(devoirs));
-}
+function save() { localStorage.setItem('devoirs', JSON.stringify(devoirs)); }
 
 // ── DATE UTILS ──
 function getWeekStart(offset = 0) {
-  const d = new Date();
-  const day = d.getDay(); // 0=dim
+  const d   = new Date();
+  const day = d.getDay();
   const diff = (day === 0 ? -6 : 1 - day) + offset * 7;
   const mon = new Date(d);
   mon.setDate(d.getDate() + diff);
@@ -1022,71 +650,71 @@ function getWeekStart(offset = 0) {
 
 function isoDate(d) {
   const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${day}`;
 }
 
 function formatDateFR(iso) {
-  const [y, m, day] = iso.split('-');
+  const [y,m,day] = iso.split('-');
   return `${day}/${m}/${y}`;
 }
 
 function weekDays(offset = 0) {
   const mon = getWeekStart(offset);
-  return Array.from({length: 5}, (_, i) => {
+  return Array.from({length:5}, (_,i) => {
     const d = new Date(mon);
-    d.setDate(mon.getDate() + i);
+    d.setDate(mon.getDate()+i);
     return d;
   });
 }
 
-const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
-const DAY_NAMES_FULL = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+const DAY_NAMES      = ['Lun','Mar','Mer','Jeu','Ven'];
+const DAY_NAMES_FULL = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi'];
 
-// ── RENDER WEEK STRIP ──
+// ── RENDER STRIP ──
 function renderStrip() {
-  const days = weekDays(currentWeekOffset);
+  const days  = weekDays(currentWeekOffset);
   const today = isoDate(new Date());
-  const mon = days[0];
-  const sun = days[4];
+  const mon = days[0], sun = days[4];
   const opts = { day:'numeric', month:'short' };
   document.getElementById('week-label').textContent =
     mon.toLocaleDateString('fr-FR', opts) + ' – ' + sun.toLocaleDateString('fr-FR', opts);
 
   const row = document.getElementById('days-row');
   row.innerHTML = '';
-  days.forEach((d, i) => {
+  days.forEach((d,i) => {
     const iso = isoDate(d);
-    const hasDevoirThisDay = devoirs.some(dv => dv.date === iso && !dv.done);
+    const hasDot = devoirs.some(dv => dv.date === iso && !dv.done);
     const pill = document.createElement('div');
-    pill.className = 'day-pill' + (i === selectedDayIndex ? ' active' : '') + (iso === today ? ' today' : '');
+    // today en jaune, actif en bleu (actif prend le dessus)
+    let cls = 'day-pill';
+    if (i === selectedDayIndex) cls += ' active';
+    if (iso === today) cls += ' today';
+    pill.className = cls;
     pill.innerHTML = `
       <span class="day-pill-name">${DAY_NAMES[i]}</span>
       <span class="day-pill-num">${d.getDate()}</span>
-      <span class="day-pill-dot${hasDevoirThisDay ? '' : ' hidden'}"></span>
+      <span class="day-pill-dot${hasDot ? '' : ' hidden'}"></span>
     `;
     pill.onclick = () => { selectedDayIndex = i; renderStrip(); renderDevoirs(); };
     row.appendChild(pill);
   });
 }
 
-// ── RENDER DEVOIRS DAY ──
+// ── RENDER DEVOIRS ──
 function renderDevoirs() {
   const days = weekDays(currentWeekOffset);
-  const day = days[selectedDayIndex];
-  const iso = isoDate(day);
+  const day  = days[selectedDayIndex];
+  const iso  = isoDate(day);
   const list = document.getElementById('devoirs-list');
-  const daysDevoirs = devoirs.filter(d => d.date === iso);
-
-  // topbar sub
   document.getElementById('topbar-sub').textContent = DAY_NAMES_FULL[selectedDayIndex] + ' ' + formatDateFR(iso);
 
+  const daysDevoirs = devoirs.filter(d => d.date === iso);
   if (daysDevoirs.length === 0) {
     list.innerHTML = `<div class="empty-day"><span class="emoji">✅</span>Rien à faire ce jour.<br>Profites-en !</div>`;
     return;
   }
-
   list.innerHTML = '';
   daysDevoirs.forEach(d => {
     const card = document.createElement('div');
@@ -1095,13 +723,13 @@ function renderDevoirs() {
     card.innerHTML = `
       <div class="devoir-check${d.done ? ' checked' : ''}" onclick="toggleDone('${d.id}')"></div>
       <div class="devoir-body">
-        <div class="devoir-matiere" style="color:${d.color || '#1a56db'}">${d.matiere}</div>
+        <div class="devoir-matiere" style="color:${d.color||'#1a56db'}">${d.matiere}</div>
         <div class="devoir-titre">${d.desc}</div>
         <div class="devoir-meta">Pour le ${formatDateFR(d.date)}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
         <button class="devoir-edit" onclick="openEditModal('${d.id}')" title="Modifier">✏️</button>
-        <button class="devoir-delete" onclick="askDeleteDevoir(this, '${d.id}')">✕</button>
+        <button class="devoir-delete" onclick="askDeleteDevoir(this,'${d.id}')">✕</button>
       </div>
     `;
     list.appendChild(card);
@@ -1113,27 +741,22 @@ function renderSemaine() {
   renderSemaineBlock('resume-row', currentWeekOffset, false);
   renderSemaineBlock('resume-row-next', currentWeekOffset + 1, true);
 }
-
 function renderSemaineBlock(rowId, offset, isNext) {
   const days = weekDays(offset);
-  const row = document.getElementById(rowId);
+  const row  = document.getElementById(rowId);
   row.innerHTML = '';
   let any = false;
-  days.forEach((d, i) => {
+  days.forEach((d,i) => {
     const iso = isoDate(d);
-    const daysDevoirs = devoirs.filter(dv => dv.date === iso && !dv.done);
-    if (daysDevoirs.length === 0) return;
+    const dd  = devoirs.filter(dv => dv.date === iso && !dv.done);
+    if (!dd.length) return;
     any = true;
-    daysDevoirs.forEach(dv => {
+    dd.forEach(dv => {
       const item = document.createElement('div');
       item.className = 'resume-item';
-      item.onclick = () => {
-        currentWeekOffset = offset;
-        selectedDayIndex = i;
-        showSection('devoirs');
-      };
+      item.onclick = () => { currentWeekOffset = offset; selectedDayIndex = i; showSection('devoirs'); };
       item.innerHTML = `
-        <div class="resume-item-dot" style="background:${dv.color || '#1a56db'}"></div>
+        <div class="resume-item-dot" style="background:${dv.color||'#1a56db'}"></div>
         <div class="resume-item-day">${DAY_NAMES[i]}</div>
         <div class="resume-item-text">${dv.matiere} — ${dv.desc}</div>
       `;
@@ -1141,8 +764,7 @@ function renderSemaineBlock(rowId, offset, isNext) {
     });
   });
   if (!any) {
-    const emoji = isNext ? '😴' : '🎉';
-    const msg = isNext ? 'Rien la semaine prochaine !' : 'Aucun devoir cette semaine !';
+    const [emoji, msg] = isNext ? ['😴','Rien la semaine prochaine !'] : ['🎉','Aucun devoir cette semaine !'];
     row.innerHTML = `<div class="empty-day"><span class="emoji">${emoji}</span>${msg}</div>`;
   }
 }
@@ -1150,67 +772,65 @@ function renderSemaineBlock(rowId, offset, isNext) {
 // ── RENDER STATS ──
 function renderStats() {
   const total = devoirs.length;
-  const done = devoirs.filter(d => d.done).length;
+  const done  = devoirs.filter(d => d.done).length;
   const pending = total - done;
   const today = isoDate(new Date());
-  const late = devoirs.filter(d => !d.done && d.date < today).length;
+  const late  = devoirs.filter(d => !d.done && d.date < today).length;
 
-  const grid = document.getElementById('stats-grid');
-  grid.innerHTML = `
+  document.getElementById('stats-grid').innerHTML = `
     <div class="stat-card" onclick="openTodoModal()" style="cursor:pointer;border:1.5px solid var(--blue);">
       <div class="stat-num">${pending}</div>
       <div class="stat-label">À faire</div>
-      <div class="stat-sub">${done} terminé${done > 1 ? 's' : ''} · voir →</div>
+      <div class="stat-sub">${done} terminé${done>1?'s':''} · voir →</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num" style="color:${late > 0 ? 'var(--red)' : 'var(--green)'}">${late}</div>
+      <div class="stat-num" style="color:${late>0?'var(--red)':'var(--green)'}">${late}</div>
       <div class="stat-label">En retard</div>
       <div class="stat-sub">${total} au total</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num">${total > 0 ? Math.round(done/total*100) : 0}%</div>
+      <div class="stat-num">${total>0?Math.round(done/total*100):0}%</div>
       <div class="stat-label">Complétés</div>
       <div class="stat-sub">taux de complétion</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num">${[...new Set(devoirs.map(d => d.matiere))].length}</div>
+      <div class="stat-num">${[...new Set(devoirs.map(d=>d.matiere))].length}</div>
       <div class="stat-label">Matières</div>
       <div class="stat-sub">distinctes</div>
     </div>
   `;
 
-  // Par matière
   const matieres = {};
   devoirs.forEach(d => {
-    if (!matieres[d.matiere]) matieres[d.matiere] = { count: 0, done: 0, color: d.color };
+    if (!matieres[d.matiere]) matieres[d.matiere] = { count:0, done:0, color:d.color };
     matieres[d.matiere].count++;
     if (d.done) matieres[d.matiere].done++;
   });
   const ml = document.getElementById('matiere-list');
   ml.innerHTML = '';
-  Object.entries(matieres).sort((a,b) => b[1].count - a[1].count).forEach(([name, info]) => {
+  Object.entries(matieres).sort((a,b)=>b[1].count-a[1].count).forEach(([name,info]) => {
     const el = document.createElement('div');
     el.className = 'matiere-row';
-    el.setAttribute('role', 'button');
-    el.setAttribute('tabindex', '0');
-    el.setAttribute('aria-label', `Voir les tâches de ${name}`);
     el.innerHTML = `
-      <div class="matiere-dot" style="background:${info.color || '#1a56db'}"></div>
+      <div class="matiere-dot" style="background:${info.color||'#1a56db'}"></div>
       <div class="matiere-name">${name}</div>
       <div class="matiere-count">${info.done}/${info.count}</div>
       <div class="matiere-chevron">›</div>
     `;
     el.onclick = () => openMatiereModal(name);
-    el.onkeydown = (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openMatiereModal(name);
-      }
-    };
     ml.appendChild(el);
   });
   if (!Object.keys(matieres).length) {
     ml.innerHTML = `<div style="color:var(--text-xsoft);font-size:13px;padding:12px 0;">Aucun devoir pour l'instant</div>`;
+  }
+
+  // EDT bannière
+  const banner = document.getElementById('edt-imported-banner');
+  if (coursImportes.length) {
+    banner.style.display = 'flex';
+    document.getElementById('edt-imported-sub').textContent = `${coursImportes.length} cours importés`;
+  } else {
+    banner.style.display = 'none';
   }
 }
 
@@ -1218,57 +838,6 @@ function renderStats() {
 function toggleDone(id) {
   const dv = devoirs.find(d => d.id === id);
   if (dv) { dv.done = !dv.done; save(); renderStrip(); renderDevoirs(); renderSemaine(); renderStats(); }
-}
-
-let pendingDeleteId = null;
-let pendingDeleteContext = null; // 'card' | 'matiere' | 'todo'
-let deleteTimeout = null;
-
-function askDelete(id, context) {
-  const dv = devoirs.find(d => d.id === id);
-  if (!dv) return;
-  pendingDeleteId = id;
-  pendingDeleteContext = context;
-  document.getElementById('delete-confirm-label').textContent = dv.matiere + ' — ' + dv.desc;
-  const bar = document.getElementById('delete-confirm-bar');
-  bar.classList.add('show');
-  clearTimeout(deleteTimeout);
-  deleteTimeout = setTimeout(() => cancelDelete(), 5000);
-}
-
-function cancelDelete() {
-  pendingDeleteId = null;
-  pendingDeleteContext = null;
-  clearTimeout(deleteTimeout);
-  document.getElementById('delete-confirm-bar').classList.remove('show');
-}
-
-function applyDelete() {
-  const id = pendingDeleteId;
-  const context = pendingDeleteContext;
-  cancelDelete();
-  if (!id) return;
-
-  const dv = devoirs.find(d => d.id === id);
-  const matiere = dv ? dv.matiere : null;
-
-  devoirs = devoirs.filter(d => d.id !== id);
-  save();
-  renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
-
-  if (context === 'matiere' && matiere) {
-    if (devoirs.some(d => d.matiere === matiere)) {
-      openMatiereModal(matiere);
-    } else {
-      closeMatiereModal();
-    }
-  } else if (context === 'todo') {
-    if (devoirs.filter(d => !d.done).length === 0) {
-      document.getElementById('todo-modal-overlay').classList.remove('open');
-    } else {
-      openTodoModal();
-    }
-  }
 }
 
 function askDeleteDevoir(btn, id) {
@@ -1287,132 +856,177 @@ function askDeleteDevoir(btn, id) {
 
 function deleteDevoir(id) {
   devoirs = devoirs.filter(d => d.id !== id);
-  save();
-  renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+  save(); renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
 }
 
 function changeWeek(dir) {
   currentWeekOffset += dir;
-  const today = new Date();
-  const todayDay = today.getDay() === 0 ? 4 : today.getDay() - 1;
-  if (currentWeekOffset === 0) selectedDayIndex = Math.min(todayDay, 4);
-  else selectedDayIndex = 0;
+  const tod = new Date().getDay();
+  if (currentWeekOffset === 0) {
+    selectedDayIndex = (tod === 0 || tod === 6) ? 0 : tod - 1;
+  } else {
+    selectedDayIndex = 0;
+  }
   renderStrip(); renderDevoirs(); renderSemaine();
 }
 
-// ── MODAL ──
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  const fab = document.getElementById('fab');
+  fab.classList.toggle('hidden', name !== 'devoirs');
+  if (name === 'devoirs') {
+    document.getElementById('topbar-sub').textContent = 'BUT GMP';
+    renderStrip(); renderDevoirs();
+  } else if (name === 'semaine') {
+    renderSemaine();
+  } else if (name === 'stats') {
+    renderStats();
+    document.getElementById('topbar-sub').textContent = 'Réglages';
+  }
+}
+
+// ── PROCHAINS COURS pour une matière ──
+function getProchainsCours(matiere) {
+  if (!coursImportes.length || !matiere) return [];
+  const today = isoDate(new Date());
+  const key = matiere.toLowerCase().trim();
+  return coursImportes
+    .filter(c => {
+      const s = (c.summary || '').toLowerCase();
+      return s.includes(key) || key.split(' ').some(w => w.length > 2 && s.includes(w));
+    })
+    .filter(c => c.isoDate > today)
+    .slice(0, 8);
+}
+
+// ── MODAL AJOUT ──
 function openModal() {
-  // préremplir date avec le jour sélectionné
   const days = weekDays(currentWeekOffset);
-  const sel = days[selectedDayIndex];
+  const sel  = days[selectedDayIndex];
   document.getElementById('f-date').value = isoDate(sel);
   document.getElementById('f-matiere').value = '';
   document.getElementById('f-desc').value = '';
-  // couleurs
+  document.getElementById('next-cours-block').style.display = 'none';
+
   const cr = document.getElementById('colors-row');
   cr.innerHTML = '';
   COLORS.forEach(c => {
     const btn = document.createElement('div');
     btn.className = 'color-btn' + (c.val === selectedColor ? ' selected' : '');
     btn.style.background = c.val;
-    btn.onclick = () => { selectedColor = c.val; document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); };
+    btn.onclick = () => {
+      selectedColor = c.val;
+      document.querySelectorAll('#colors-row .color-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    };
     cr.appendChild(btn);
   });
-  // datalist
+
   const dl = document.getElementById('matieres-list');
   dl.innerHTML = '';
   [...new Set(devoirs.map(d => d.matiere))].forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m;
-    dl.appendChild(opt);
+    const opt = document.createElement('option'); opt.value = m; dl.appendChild(opt);
   });
+
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
+function onMatiereInput() {
+  const val = document.getElementById('f-matiere').value.trim();
+  const block = document.getElementById('next-cours-block');
+  const dropdown = document.getElementById('next-cours-dropdown');
+  if (!val || !coursImportes.length) { block.style.display = 'none'; return; }
+
+  const cours = getProchainsCours(val);
+  if (!cours.length) {
+    block.style.display = 'block';
+    dropdown.innerHTML = '<div style="padding:10px 12px;font-size:12px;color:var(--text-xsoft);font-style:italic;">Aucun cours trouvé dans l\'EDT pour cette matière.</div>';
+    return;
+  }
+  dropdown.innerHTML = '';
+  cours.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'cours-dropdown-item';
+    const [y,m,d] = c.isoDate.split('-');
+    const dateLabel = `${c.jourNom || ''} ${d}/${m}`;
+    const horaireLabel = c.horaire || '';
+    item.innerHTML = `
+      <span class="cours-dropdown-icon">📅</span>
+      <div class="cours-dropdown-body">
+        <div class="cours-dropdown-name">${c.summary}</div>
+        ${horaireLabel ? `<div class="cours-dropdown-meta">${horaireLabel}</div>` : ''}
+      </div>
+      <div class="cours-dropdown-date">${dateLabel}</div>
+    `;
+    item.onclick = () => {
+      document.getElementById('f-date').value = c.isoDate;
+      document.querySelectorAll('.cours-dropdown-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+    };
+    dropdown.appendChild(item);
+  });
+  block.style.display = 'block';
 }
 
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
-}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
 
 function saveDevoir() {
   const matiere = document.getElementById('f-matiere').value.trim();
-  const desc = document.getElementById('f-desc').value.trim();
-  const date = document.getElementById('f-date').value;
-  if (!matiere || !desc || !date) { alert('Remplis tous les champs !'); return; }
+  const desc    = document.getElementById('f-desc').value.trim();
+  const date    = document.getElementById('f-date').value;
+  if (!matiere || !desc || !date) {
+    document.getElementById('f-matiere').style.borderColor = !matiere ? 'var(--red)' : '';
+    document.getElementById('f-desc').style.borderColor    = !desc    ? 'var(--red)' : '';
+    document.getElementById('f-date').style.borderColor    = !date    ? 'var(--red)' : '';
+    return;
+  }
   devoirs.push({ id: Date.now().toString(), matiere, desc, date, color: selectedColor, done: false });
-  save();
-  closeModal();
-  renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+  save(); closeModal(); renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
 }
 
-// ── MODALE MATIÈRE ──
+// ── MATIERE MODAL ──
 function openMatiereModal(matiere) {
-  const modal = document.getElementById('matiere-modal-overlay');
-  const title = document.getElementById('matiere-modal-title');
-  const sub = document.getElementById('matiere-modal-sub');
-  const body = document.getElementById('matiere-modal-body');
-
   const tasks = devoirs.filter(d => d.matiere === matiere);
-  const done = tasks.filter(d => d.done).length;
+  const done  = tasks.filter(d => d.done).length;
   const pending = tasks.filter(d => !d.done).length;
   const today = isoDate(new Date());
-
-  title.textContent = matiere;
-  sub.textContent = `${done} terminée${done > 1 ? 's' : ''} · ${pending} à faire`;
-
-  if (tasks.length === 0) {
+  document.getElementById('matiere-modal-title').textContent = matiere;
+  document.getElementById('matiere-modal-sub').textContent = `${done} terminée${done>1?'s':''} · ${pending} à faire`;
+  const body = document.getElementById('matiere-modal-body');
+  if (!tasks.length) {
     body.innerHTML = '<div class="matiere-task-empty">Aucune tâche pour cette matière.</div>';
   } else {
-    const pendingTasks = [...tasks]
-      .filter(d => !d.done)
-      .sort((a, b) => a.date.localeCompare(b.date));
-
-    const doneTasks = [...tasks]
-      .filter(d => d.done)
-      .sort((a, b) => b.date.localeCompare(a.date));
-
+    const pendingTasks = [...tasks].filter(d=>!d.done).sort((a,b)=>a.date.localeCompare(b.date));
+    const doneTasks    = [...tasks].filter(d=>d.done).sort((a,b)=>b.date.localeCompare(a.date));
     body.innerHTML = '';
-
     if (pendingTasks.length) {
-      const heading = document.createElement('div');
-      heading.className = 'matiere-task-section';
-      heading.textContent = `À faire (${pendingTasks.length})`;
-      body.appendChild(heading);
-
+      const h = document.createElement('div'); h.className='matiere-task-section'; h.textContent=`À faire (${pendingTasks.length})`; body.appendChild(h);
       pendingTasks.forEach(dv => appendMatiereTask(body, dv, today));
     }
-
     if (doneTasks.length) {
-      const heading = document.createElement('div');
-      heading.className = 'matiere-task-section';
-      heading.textContent = `Terminées (${doneTasks.length})`;
-      body.appendChild(heading);
-
+      const h = document.createElement('div'); h.className='matiere-task-section'; h.textContent=`Terminées (${doneTasks.length})`; body.appendChild(h);
       doneTasks.forEach(dv => appendMatiereTask(body, dv, today));
     }
   }
-
-  modal.classList.add('open');
+  document.getElementById('matiere-modal-overlay').classList.add('open');
 }
 
 function appendMatiereTask(body, dv, today) {
   const item = document.createElement('div');
   item.className = 'matiere-task';
   const isLate = !dv.done && dv.date < today;
-
   item.innerHTML = `
-    <div class="matiere-task-check${dv.done ? ' checked' : ''}" onclick="toggleDoneFromMatiere('${dv.id}')"></div>
+    <div class="matiere-task-check${dv.done?' checked':''}" onclick="toggleDoneFromMatiere('${dv.id}')"></div>
     <div class="matiere-task-body">
-      <div class="matiere-task-desc${dv.done ? ' done' : ''}">${dv.desc}</div>
-      <div class="matiere-task-date${isLate ? ' late' : ''}">
-        ${isLate ? '⚠️ En retard — ' : ''}Pour le ${formatDateFR(dv.date)}
-      </div>
+      <div class="matiere-task-desc${dv.done?' done':''}">${dv.desc}</div>
+      <div class="matiere-task-date${isLate?' late':''}">${isLate?'⚠️ En retard — ':''}Pour le ${formatDateFR(dv.date)}</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
-      <button class="matiere-task-edit" onclick="openEditModal('${dv.id}')" title="Modifier">✏️</button>
+      <button class="matiere-task-edit" onclick="openEditModal('${dv.id}')">✏️</button>
       <button class="matiere-task-delete" onclick="deleteFromMatiere('${dv.id}')">✕</button>
     </div>
   `;
@@ -1427,45 +1041,43 @@ function toggleDoneFromMatiere(id) {
   openMatiereModal(matiere);
 }
 
-function deleteFromMatiere(id) { askDelete(id, 'matiere'); }
-
-function closeMatiereModal() {
-  document.getElementById('matiere-modal-overlay').classList.remove('open');
+function deleteFromMatiere(id) {
+  const dv = devoirs.find(d => d.id === id);
+  if (!dv) return;
+  const matiere = dv.matiere;
+  devoirs = devoirs.filter(d => d.id !== id);
+  save(); renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+  if (devoirs.some(d => d.matiere === matiere)) openMatiereModal(matiere);
+  else closeMatiereModal();
 }
 
-function closeMatiereModalOutside(e) {
-  if (e.target === document.getElementById('matiere-modal-overlay')) {
-    closeMatiereModal();
-  }
-}
+function closeMatiereModal() { document.getElementById('matiere-modal-overlay').classList.remove('open'); }
+function closeMatiereModalOutside(e) { if (e.target === document.getElementById('matiere-modal-overlay')) closeMatiereModal(); }
 
-// ── MODALE TODO ──
+// ── TODO MODAL ──
 function openTodoModal() {
-  const today = isoDate(new Date());
+  const today   = isoDate(new Date());
   const pending = devoirs.filter(d => !d.done);
   const body = document.getElementById('todo-modal-body');
-  const sub = document.getElementById('todo-modal-sub');
-  sub.textContent = pending.length + ' devoir' + (pending.length > 1 ? 's' : '') + ' restant' + (pending.length > 1 ? 's' : '');
-
-  if (pending.length === 0) {
+  document.getElementById('todo-modal-sub').textContent = pending.length + ' devoir' + (pending.length>1?'s':'') + ' restant' + (pending.length>1?'s':'');
+  if (!pending.length) {
     body.innerHTML = '<div class="todo-empty">🎉 Tout est fait !</div>';
   } else {
-    // Trier par date
-    const sorted = [...pending].sort((a, b) => a.date.localeCompare(b.date));
+    const sorted = [...pending].sort((a,b) => a.date.localeCompare(b.date));
     body.innerHTML = '';
     sorted.forEach(dv => {
       const isLate = dv.date < today;
       const item = document.createElement('div');
       item.className = 'todo-item';
       item.innerHTML = `
-        <div class="todo-check${dv.done ? ' checked' : ''}" onclick="toggleDoneTodo('${dv.id}')"></div>
+        <div class="todo-check${dv.done?' checked':''}" onclick="toggleDoneTodo('${dv.id}')"></div>
         <div class="todo-body">
-          <div class="todo-matiere" style="color:${dv.color || '#1a56db'}">${dv.matiere}</div>
-          <div class="todo-desc${dv.done ? ' done-text' : ''}">${dv.desc}</div>
-          <div class="todo-date${isLate ? ' late' : ''}">${isLate ? '⚠️ En retard — ' : ''}Pour le ${formatDateFR(dv.date)}</div>
+          <div class="todo-matiere" style="color:${dv.color||'#1a56db'}">${dv.matiere}</div>
+          <div class="todo-desc${dv.done?' done-text':''}">${dv.desc}</div>
+          <div class="todo-date${isLate?' late':''}">${isLate?'⚠️ En retard — ':''}Pour le ${formatDateFR(dv.date)}</div>
         </div>
-        <button class="todo-edit" onclick="openEditFromTodo('${dv.id}')" title="Modifier">✏️</button>
-        <button class="todo-delete" onclick="deleteFromTodo('${dv.id}')" title="Supprimer">✕</button>
+        <button class="todo-edit" onclick="openEditFromTodo('${dv.id}')">✏️</button>
+        <button class="todo-delete" onclick="deleteFromTodo('${dv.id}')">✕</button>
       `;
       body.appendChild(item);
     });
@@ -1473,191 +1085,48 @@ function openTodoModal() {
   document.getElementById('todo-modal-overlay').classList.add('open');
 }
 
-function toggleDoneTodo(id) {
-  toggleDone(id);
-  openTodoModal();
+function toggleDoneTodo(id) { toggleDone(id); openTodoModal(); }
+
+function deleteFromTodo(id) {
+  devoirs = devoirs.filter(d => d.id !== id);
+  save(); renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
+  if (devoirs.filter(d => !d.done).length === 0) document.getElementById('todo-modal-overlay').classList.remove('open');
+  else openTodoModal();
 }
 
-function deleteFromTodo(id) { askDelete(id, 'todo'); }
+function closeTodoModalOutside(e) { if (e.target === document.getElementById('todo-modal-overlay')) document.getElementById('todo-modal-overlay').classList.remove('open'); }
 
 function openEditFromTodo(id) {
   document.getElementById('todo-modal-overlay').classList.remove('open');
   setTimeout(() => { openEditModal(id); editOrigin = 'todo'; }, 200);
 }
 
-function closeTodoModalOutside(e) {
-  if (e.target === document.getElementById('todo-modal-overlay')) {
-    document.getElementById('todo-modal-overlay').classList.remove('open');
-  }
-}
-
-// ── SECTION NAV ──
-function showSection(name) {
-  ['devoirs','semaine','stats'].forEach(s => {
-    document.getElementById('sec-' + s).classList.toggle('active', s === name);
-    document.getElementById('nav-' + s).classList.toggle('active', s === name);
-  });
-  document.getElementById('fab').classList.toggle('hidden', name !== 'devoirs');
-  if (name === 'devoirs') { document.getElementById('topbar-sub').textContent = 'BUT GMP'; renderStrip(); renderDevoirs(); }
-  if (name === 'semaine') renderSemaine();
-  if (name === 'stats') renderStats();
-}
-
-// ── ICS IMPORT ──
-async function loadICS() {
-  const url = document.getElementById('ics-url').value.trim();
-  const status = document.getElementById('ics-status');
-  const cl = document.getElementById('cours-import-list');
-  if (!url) { status.className='ics-status err'; status.textContent='Colle une URL ICS d\'abord.'; status.style.display='block'; return; }
-
-  status.className='ics-status'; status.textContent='⏳ Connexion au serveur de Nantes Université…'; status.style.display='block';
-  cl.innerHTML = '';
-
-  // Liste de proxies CORS à essayer dans l'ordre
-  const proxies = [
-    async (u) => {
-      const r = await fetch('https://corsproxy.io/?' + encodeURIComponent(u));
-      if (!r.ok) throw new Error('corsproxy.io failed');
-      return await r.text();
-    },
-    async (u) => {
-      const r = await fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u));
-      if (!r.ok) throw new Error('codetabs failed');
-      return await r.text();
-    },
-    async (u) => {
-      const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(u));
-      if (!r.ok) throw new Error('allorigins failed');
-      const d = await r.json();
-      if (!d.contents) throw new Error('empty');
-      return d.contents;
-    },
-    async (u) => {
-      const r = await fetch('https://thingproxy.freeboard.io/fetch/' + u);
-      if (!r.ok) throw new Error('thingproxy failed');
-      return await r.text();
-    }
-  ];
-
-  let icsText = null;
-  let lastErr = '';
-  for (let i = 0; i < proxies.length; i++) {
-    try {
-      status.textContent = `⏳ Tentative ${i+1}/${proxies.length}…`;
-      icsText = await proxies[i](url);
-      if (icsText && icsText.includes('BEGIN:VCALENDAR')) break;
-      icsText = null;
-    } catch(e) { lastErr = e.message; }
-  }
-
-  if (!icsText || !icsText.includes('BEGIN:VCALENDAR')) {
-    status.className='ics-status err';
-    status.innerHTML = `❌ <strong>Le serveur de Nantes Université bloque l'accès depuis une application web.</strong><br><br>
-      <strong>Solution :</strong> télécharge ton fichier .ics depuis <a href="https://edt.univ-nantes.fr" target="_blank" style="color:var(--red)">edt.univ-nantes.fr</a>, 
-      puis clique sur "Importer un fichier .ics" ci-dessous.`;
-    // Afficher bouton import fichier local
-    const btn = document.createElement('label');
-    btn.className = 'ics-btn';
-    btn.style = 'display:inline-block;margin-top:10px;cursor:pointer;';
-    btn.innerHTML = '📁 Importer un fichier .ics';
-    const inp = document.createElement('input');
-    inp.type = 'file';
-    inp.accept = '.ics';
-    inp.style = 'display:none';
-    inp.onchange = (e) => loadICSFile(e.target.files[0]);
-    btn.appendChild(inp);
-    cl.appendChild(btn);
-    return;
-  }
-
-  afficherResultatICS(icsText, url, status, cl);
-}
-
-function loadICSFile(file) {
-  const status = document.getElementById('ics-status');
-  const cl = document.getElementById('cours-import-list');
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const text = e.target.result;
-    if (!text.includes('BEGIN:VCALENDAR')) {
-      status.className='ics-status err'; status.textContent='❌ Ce fichier ne semble pas être un fichier ICS valide.'; return;
-    }
-    afficherResultatICS(text, file.name, status, cl);
-  };
-  reader.readAsText(file);
-}
-
-function afficherResultatICS(icsText, source, status, cl) {
-  const events = parseICS(icsText);
-  localStorage.setItem('ics-url', source);
-  localStorage.setItem('ics-events', JSON.stringify(events));
-  status.className='ics-status ok';
-  status.textContent = `✅ ${events.length} cours importés avec succès !`;
-  cl.innerHTML = '';
-  events.slice(0, 8).forEach(ev => {
-    const d = document.createElement('div');
-    d.className = 'cours-import-item';
-    d.innerHTML = `<span>${ev.summary}</span><span>${ev.date}</span>`;
-    cl.appendChild(d);
-  });
-  if (events.length > 8) {
-    const more = document.createElement('div');
-    more.style = 'font-size:12px;color:var(--text-soft);padding:4px 0;';
-    more.textContent = `+ ${events.length - 8} autres cours`;
-    cl.appendChild(more);
-  }
-}
-
-function parseICS(text) {
-  const events = [];
-  const blocks = text.split('BEGIN:VEVENT');
-  blocks.slice(1).forEach(block => {
-    const summary = (block.match(/SUMMARY[^:]*:(.+)/)?.[1] || '').trim();
-    const dtstart = block.match(/DTSTART[^:]*:(\d{8})/)?.[1];
-    if (!summary || !dtstart) return;
-    const y = dtstart.slice(0,4), m = dtstart.slice(4,6), d = dtstart.slice(6,8);
-    events.push({ summary, date: `${d}/${m}/${y}` });
-  });
-  return events;
-}
-
-// ── MODALE ÉDITION ──
-let editingId = null;
-let editOriginal = null;
-let editSelectedColor = null;
-let editOrigin = null; // 'todo' | 'matiere' | null
+// ── EDIT MODAL ──
+let editingId = null, editOriginal = null, editSelectedColor = null, editOrigin = null;
 
 function openEditModal(id) {
   const dv = devoirs.find(d => d.id === id);
   if (!dv) return;
-
   editingId = id;
   editOriginal = { matiere: dv.matiere, desc: dv.desc, date: dv.date, color: dv.color };
   editSelectedColor = dv.color || COLORS[0].val;
 
-  // Pré-remplir les champs
   document.getElementById('ef-matiere').value = dv.matiere;
-  document.getElementById('ef-desc').value = dv.desc;
-  document.getElementById('ef-date').value = dv.date;
+  document.getElementById('ef-desc').value    = dv.desc;
+  document.getElementById('ef-date').value    = dv.date;
 
-  // Datalist
   const dl = document.getElementById('edit-matieres-list');
   dl.innerHTML = '';
   [...new Set(devoirs.map(d => d.matiere))].forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m;
-    dl.appendChild(opt);
+    const opt = document.createElement('option'); opt.value = m; dl.appendChild(opt);
   });
 
-  // Couleurs
   const cr = document.getElementById('edit-colors-row');
   cr.innerHTML = '';
   COLORS.forEach(c => {
     const btn = document.createElement('div');
     btn.className = 'color-btn' + (c.val === editSelectedColor ? ' selected' : '');
     btn.style.background = c.val;
-    btn.title = c.name;
     btn.onclick = () => {
       editSelectedColor = c.val;
       document.querySelectorAll('#edit-colors-row .color-btn').forEach(b => b.classList.remove('selected'));
@@ -1667,61 +1136,44 @@ function openEditModal(id) {
     cr.appendChild(btn);
   });
 
-  // Aperçu initial
   document.getElementById('edit-preview').style.borderLeftColor = dv.color || '#1a56db';
   document.getElementById('edit-preview-matiere').textContent = dv.matiere;
-  document.getElementById('edit-preview-desc').textContent = dv.desc;
-  document.getElementById('edit-preview-date').textContent = formatDateFR(dv.date);
+  document.getElementById('edit-preview-desc').textContent    = dv.desc;
+  document.getElementById('edit-preview-date').textContent    = formatDateFR(dv.date);
   document.getElementById('edit-change-indicator').classList.remove('visible');
-
   document.getElementById('edit-modal-overlay').classList.add('open');
 }
 
 function updateEditPreview() {
   const matiere = document.getElementById('ef-matiere').value.trim();
-  const desc = document.getElementById('ef-desc').value.trim();
-  const date = document.getElementById('ef-date').value;
-
+  const desc    = document.getElementById('ef-desc').value.trim();
+  const date    = document.getElementById('ef-date').value;
   document.getElementById('edit-preview-matiere').textContent = matiere || '—';
-  document.getElementById('edit-preview-desc').textContent = desc || '—';
-  document.getElementById('edit-preview-date').textContent = date ? formatDateFR(date) : '—';
+  document.getElementById('edit-preview-desc').textContent    = desc    || '—';
+  document.getElementById('edit-preview-date').textContent    = date ? formatDateFR(date) : '—';
   document.getElementById('edit-preview').style.borderLeftColor = editSelectedColor || '#1a56db';
-
-  const changed = (
-    matiere !== editOriginal.matiere ||
-    desc !== editOriginal.desc ||
-    date !== editOriginal.date ||
-    editSelectedColor !== editOriginal.color
-  );
+  const changed = matiere !== editOriginal.matiere || desc !== editOriginal.desc || date !== editOriginal.date || editSelectedColor !== editOriginal.color;
   document.getElementById('edit-change-indicator').classList.toggle('visible', changed);
 }
 
 function confirmEditDevoir() {
   const matiere = document.getElementById('ef-matiere').value.trim();
-  const desc = document.getElementById('ef-desc').value.trim();
-  const date = document.getElementById('ef-date').value;
-
+  const desc    = document.getElementById('ef-desc').value.trim();
+  const date    = document.getElementById('ef-date').value;
   if (!matiere || !desc || !date) {
     document.getElementById('ef-matiere').style.borderColor = !matiere ? 'var(--red)' : '';
-    document.getElementById('ef-desc').style.borderColor = !desc ? 'var(--red)' : '';
-    document.getElementById('ef-date').style.borderColor = !date ? 'var(--red)' : '';
+    document.getElementById('ef-desc').style.borderColor    = !desc    ? 'var(--red)' : '';
+    document.getElementById('ef-date').style.borderColor    = !date    ? 'var(--red)' : '';
     return;
   }
-
   const dv = devoirs.find(d => d.id === editingId);
   if (!dv) return;
-
   const changes = [];
   if (matiere !== editOriginal.matiere) changes.push(`Matière : <b>${editOriginal.matiere}</b> → <b>${matiere}</b>`);
-  if (desc !== editOriginal.desc) changes.push(`Description modifiée`);
-  if (date !== editOriginal.date) changes.push(`Date : <b>${formatDateFR(editOriginal.date)}</b> → <b>${formatDateFR(date)}</b>`);
+  if (desc    !== editOriginal.desc)    changes.push(`Description modifiée`);
+  if (date    !== editOriginal.date)    changes.push(`Date : <b>${formatDateFR(editOriginal.date)}</b> → <b>${formatDateFR(date)}</b>`);
   if (editSelectedColor !== editOriginal.color) changes.push(`Couleur modifiée`);
-
-  if (changes.length === 0) {
-    applyEdit();
-    return;
-  }
-
+  if (!changes.length) { applyEdit(); return; }
   document.getElementById('edit-confirm-changes').innerHTML = changes.join('<br>');
   document.getElementById('edit-confirm-bar').style.display = 'block';
   document.getElementById('edit-save-btn').style.display = 'none';
@@ -1736,23 +1188,15 @@ function cancelConfirm() {
 
 function applyEdit() {
   const matiere = document.getElementById('ef-matiere').value.trim();
-  const desc = document.getElementById('ef-desc').value.trim();
-  const date = document.getElementById('ef-date').value;
+  const desc    = document.getElementById('ef-desc').value.trim();
+  const date    = document.getElementById('ef-date').value;
   const dv = devoirs.find(d => d.id === editingId);
   if (!dv) return;
-
-  dv.matiere = matiere;
-  dv.desc = desc;
-  dv.date = date;
-  dv.color = editSelectedColor;
+  dv.matiere = matiere; dv.desc = desc; dv.date = date; dv.color = editSelectedColor;
   save();
-
   const origin = editOrigin;
   closeEditModal();
-  renderStrip();
-  renderDevoirs();
-  renderSemaine();
-  renderStats();
+  renderStrip(); renderDevoirs(); renderSemaine(); renderStats();
   if (origin === 'todo') setTimeout(() => openTodoModal(), 200);
 }
 
@@ -1760,27 +1204,103 @@ function closeEditModal() {
   document.getElementById('edit-modal-overlay').classList.remove('open');
   document.getElementById('edit-confirm-bar').style.display = 'none';
   document.getElementById('edit-save-btn').style.display = '';
-  const cancelBtn = document.querySelector('#edit-modal-overlay .btn-cancel');
-  if (cancelBtn) cancelBtn.style.display = '';
-  editingId = null;
-  editOriginal = null;
-  editOrigin = null;
+  const cb = document.querySelector('#edit-modal-overlay .btn-cancel');
+  if (cb) cb.style.display = '';
+  editingId = null; editOriginal = null; editOrigin = null;
+}
+function closeEditModalOutside(e) { if (e.target === document.getElementById('edit-modal-overlay')) closeEditModal(); }
+
+// ── ICS ──
+function loadICSPaste() {
+  const text = document.getElementById('ics-paste').value.trim();
+  const status = document.getElementById('ics-status');
+  if (!text) { status.className='edt-status err'; status.textContent='❌ Colle le contenu ICS d\'abord.'; return; }
+  if (!text.includes('BEGIN:VCALENDAR')) { status.className='edt-status err'; status.textContent='❌ Ce contenu ne ressemble pas à un fichier ICS valide (doit commencer par BEGIN:VCALENDAR).'; return; }
+  importerICS(text, 'texte collé', status);
 }
 
-function closeEditModalOutside(e) {
-  if (e.target === document.getElementById('edit-modal-overlay')) closeEditModal();
+function loadICSFile(file) {
+  const status = document.getElementById('ics-status');
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    if (!text.includes('BEGIN:VCALENDAR')) { status.className='edt-status err'; status.textContent='❌ Fichier ICS invalide.'; return; }
+    importerICS(text, file.name, status);
+  };
+  reader.readAsText(file);
+}
+
+function importerICS(text, source, status) {
+  const events = parseICS(text);
+  coursImportes = events;
+  localStorage.setItem('ics-events', JSON.stringify(events));
+  status.className = 'edt-status ok';
+  status.textContent = `✅ ${events.length} cours importés depuis ${source} !`;
+  const preview = document.getElementById('edt-preview');
+  const cl      = document.getElementById('cours-import-list');
+  preview.style.display = 'block';
+  document.getElementById('edt-preview-title').textContent = `Aperçu (${events.length} cours)`;
+  cl.innerHTML = '';
+  events.slice(0, 8).forEach(ev => {
+    const d = document.createElement('div');
+    d.className = 'cours-item';
+    d.innerHTML = `<span class="cours-item-name">${ev.summary}</span><span class="cours-item-date">${ev.date}</span>`;
+    cl.appendChild(d);
+  });
+  if (events.length > 8) {
+    const more = document.createElement('div');
+    more.style = 'font-size:12px;color:var(--text-soft);padding:6px 0;';
+    more.textContent = `+ ${events.length - 8} autres cours`;
+    cl.appendChild(more);
+  }
+  renderStats();
+}
+
+function clearEDT() {
+  coursImportes = [];
+  localStorage.removeItem('ics-events');
+  document.getElementById('ics-paste').value = '';
+  document.getElementById('ics-status').className = 'edt-status';
+  document.getElementById('edt-preview').style.display = 'none';
+  renderStats();
+}
+
+function parseICS(text) {
+  const events = [];
+  const JOURS = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const blocks = text.split('BEGIN:VEVENT');
+  blocks.slice(1).forEach(block => {
+    const summary = (block.match(/SUMMARY[^:]*:(.+)/)?.[1] || '').trim().replace(/\\,/g,',').replace(/\\n/g,' ');
+    const dtFull = block.match(/DTSTART[^:]*:(\d{8}T?\d*)/)?.[1] || '';
+    const dtEnd  = block.match(/DTEND[^:]*:(\d{8}T?\d*)/)?.[1]   || '';
+    if (!summary || !dtFull) return;
+    const y = dtFull.slice(0,4), m = dtFull.slice(4,6), d = dtFull.slice(6,8);
+    const isoD = `${y}-${m}-${d}`;
+    const dateObj = new Date(parseInt(y), parseInt(m)-1, parseInt(d));
+    const jourNom = JOURS[dateObj.getDay()];
+    let heureDebut = '', heureFin = '';
+    if (dtFull.length >= 13) {
+      const hh = dtFull.slice(9,11), mm = dtFull.slice(11,13);
+      heureDebut = `${hh}h${mm !== '00' ? mm : ''}`;
+    }
+    if (dtEnd.length >= 13) {
+      const hh = dtEnd.slice(9,11), mm = dtEnd.slice(11,13);
+      heureFin = `${hh}h${mm !== '00' ? mm : ''}`;
+    }
+    const horaire = heureDebut ? (heureFin ? `${heureDebut}–${heureFin}` : heureDebut) : '';
+    events.push({ summary, date:`${d}/${m}/${y}`, isoDate: isoD, jourNom, horaire });
+  });
+  events.sort((a,b) => a.isoDate.localeCompare(b.isoDate));
+  return events;
 }
 
 // ── INIT ──
 function init() {
-  // Aujourd'hui par défaut
   const tod = new Date().getDay();
-  selectedDayIndex = tod === 0 || tod === 6 ? 0 : tod - 1;
+  selectedDayIndex = (tod === 0 || tod === 6) ? 0 : tod - 1;
   renderStrip();
   renderDevoirs();
-  // ICS sauvegardé
-  const savedUrl = localStorage.getItem('ics-url');
-  if (savedUrl) document.getElementById('ics-url').value = savedUrl;
 }
 
 init();
