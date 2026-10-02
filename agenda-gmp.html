@@ -335,8 +335,23 @@
   .todo-modal-title { font-size: 17px; font-weight: 700; }
   .todo-modal-sub { font-size: 13px; color: var(--text-soft); margin-top: 2px; }
   .todo-modal-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)); flex: 1; }
-  .todo-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .todo-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); position: relative; }
   .todo-item:last-child { border-bottom: none; }
+  .todo-confirm-delete {
+    position: absolute; inset: 0; background: rgba(255,255,255,0.97);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 14px; gap: 10px; z-index: 5;
+  }
+  .todo-confirm-delete span { font-size: 13px; font-weight: 600; color: var(--red); flex: 1; }
+  .todo-confirm-delete .btn-no {
+    padding: 7px 14px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--bg); font-size: 13px; font-weight: 600; color: var(--text-soft);
+    cursor: pointer; font-family: inherit;
+  }
+  .todo-confirm-delete .btn-yes {
+    padding: 7px 14px; border-radius: 8px; border: none; background: var(--red);
+    font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; font-family: inherit;
+  }
   .todo-check {
     width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border);
     flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -844,13 +859,26 @@ function askDeleteDevoir(btn, id) {
   const card = btn.closest('.devoir-card');
   const existing = card.querySelector('.devoir-confirm-delete');
   if (existing) { existing.remove(); return; }
+
   const panel = document.createElement('div');
   panel.className = 'devoir-confirm-delete';
-  panel.innerHTML = `
-    <span>🗑️ Supprimer ?</span>
-    <button class="btn-no" onclick="this.closest('.devoir-confirm-delete').remove()">Non</button>
-    <button class="btn-yes" onclick="deleteDevoir('${id}')">Oui</button>
-  `;
+
+  const label = document.createElement('span');
+  label.textContent = '🗑️ Supprimer ?';
+
+  const btnNo = document.createElement('button');
+  btnNo.className = 'btn-no';
+  btnNo.textContent = 'Non';
+  btnNo.addEventListener('click', () => panel.remove());
+
+  const btnYes = document.createElement('button');
+  btnYes.className = 'btn-yes';
+  btnYes.textContent = 'Oui';
+  btnYes.addEventListener('click', () => deleteDevoir(id));
+
+  panel.appendChild(label);
+  panel.appendChild(btnNo);
+  panel.appendChild(btnYes);
   card.appendChild(panel);
 }
 
@@ -1077,8 +1105,10 @@ function openTodoModal() {
           <div class="todo-date${isLate?' late':''}">${isLate?'⚠️ En retard — ':''}Pour le ${formatDateFR(dv.date)}</div>
         </div>
         <button class="todo-edit" onclick="openEditFromTodo('${dv.id}')">✏️</button>
-        <button class="todo-delete" onclick="deleteFromTodo('${dv.id}')">✕</button>
+        <button class="todo-delete" id="del-todo-${dv.id}">✕</button>
       `;
+      const delBtn = item.querySelector('.todo-delete');
+      delBtn.addEventListener('click', () => askDeleteTodo(delBtn, dv.id));
       body.appendChild(item);
     });
   }
@@ -1086,6 +1116,33 @@ function openTodoModal() {
 }
 
 function toggleDoneTodo(id) { toggleDone(id); openTodoModal(); }
+
+function askDeleteTodo(btn, id) {
+  const item = btn.closest('.todo-item');
+  const existing = item.querySelector('.todo-confirm-delete');
+  if (existing) { existing.remove(); return; }
+
+  const panel = document.createElement('div');
+  panel.className = 'todo-confirm-delete';
+
+  const label = document.createElement('span');
+  label.textContent = '🗑️ Supprimer ?';
+
+  const btnNo = document.createElement('button');
+  btnNo.className = 'btn-no';
+  btnNo.textContent = 'Non';
+  btnNo.addEventListener('click', () => panel.remove());
+
+  const btnYes = document.createElement('button');
+  btnYes.className = 'btn-yes';
+  btnYes.textContent = 'Oui';
+  btnYes.addEventListener('click', () => deleteFromTodo(id));
+
+  panel.appendChild(label);
+  panel.appendChild(btnNo);
+  panel.appendChild(btnYes);
+  item.appendChild(panel);
+}
 
 function deleteFromTodo(id) {
   devoirs = devoirs.filter(d => d.id !== id);
